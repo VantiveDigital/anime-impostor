@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anime Impostor</title>
+<meta name="description" content="Play the anime word impostor game with friends over Discord. Session-based rooms, no pass-the-phone needed.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍥</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" integrity="sha384-2zrRDgDHSYB/GN3nFW3fsZXoxEhKIr3N2h63Tc6DEOB9JJdFIu8xMJT2Cph/gBil" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0e1a; --bg2:#1a1830; --card:#211e3d; --card2:#2b2750;
+  --pink:#ff5c8a; --purple:#8b5cf6; --gold:#ffc44d; --cyan:#4dd6ff;
+  --text:#f2f0ff; --muted:#9a94c2; --danger:#ff5c5c; --green:#3ddc84;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);
+  background-image:radial-gradient(circle at 20% 0%,rgba(139,92,246,.22),transparent 45%),
+    radial-gradient(circle at 85% 100%,rgba(255,92,138,.16),transparent 45%);
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+}
+.wrap{width:100%;max-width:520px;padding:20px 16px 48px;flex:1}
+h1.logo{
+  font-family:'Bangers',cursive;font-size:clamp(2.4rem,9vw,3.4rem);letter-spacing:2px;
+  text-align:center;line-height:1;margin:14px 0 2px;
+  background:linear-gradient(100deg,var(--pink),var(--gold) 55%,var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 3px 0 rgba(0,0,0,.45));
+}
+.tagline{text-align:center;color:var(--muted);font-weight:700;margin-bottom:22px;font-size:.95rem}
+.screen{display:none;animation:pop .25s ease}
+.screen.active{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+label.lbl{display:block;font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 6px 2px}
+input[type=text]{
+  width:100%;padding:13px 14px;border-radius:12px;border:2px solid rgba(255,255,255,.1);
+  background:var(--bg2);color:var(--text);font-family:inherit;font-size:1.05rem;font-weight:700;outline:none;
+}
+input[type=text]:focus{border-color:var(--purple)}
+.btn{
+  display:block;width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;
+  font-family:'Bangers',cursive;font-size:1.35rem;letter-spacing:1.5px;color:#fff;
+  background:linear-gradient(100deg,var(--pink),var(--purple));
+  box-shadow:0 5px 0 rgba(0,0,0,.35);transition:transform .08s ease,filter .15s;margin-top:12px;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.btn.alt{background:linear-gradient(100deg,#3b3670,#524aa5)}
+.btn.gold{background:linear-gradient(100deg,#e8a020,var(--gold));color:#231a00}
+.btn.ghost{background:transparent;border:2px dashed rgba(255,255,255,.2);box-shadow:none;color:var(--muted);font-size:1.1rem}
+.btn:disabled{filter:grayscale(.7) brightness(.6);cursor:not-allowed}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.avatar-pick{display:flex;align-items:center;gap:12px}
+.avatar{
+  width:56px;height:56px;min-width:56px;border-radius:16px;background:var(--bg2);
+  border:2px solid rgba(255,255,255,.12);font-size:1.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.hint{color:var(--muted);font-size:.85rem;margin-top:8px;line-height:1.45}
+.code-input{text-transform:uppercase;letter-spacing:8px;text-align:center;font-size:1.6rem!important;font-family:'Bangers',cursive!important}
+/* categories */
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.cat{
+  padding:8px 12px;border-radius:999px;background:var(--bg2);border:2px solid rgba(255,255,255,.1);
+  font-weight:800;font-size:.85rem;cursor:pointer;user-select:none;color:var(--muted);
+}
+.cat.on{background:linear-gradient(100deg,rgba(255,92,138,.25),rgba(139,92,246,.25));border-color:var(--purple);color:var(--text)}
+.cat-tools{display:flex;gap:14px;margin-bottom:10px}
+.cat-tools a{color:var(--cyan);font-weight:800;font-size:.85rem;cursor:pointer;text-decoration:none}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.toggle-row .t-label{font-weight:800}
+.toggle-row .t-sub{color:var(--muted);font-size:.82rem;margin-top:2px}
+.switch{position:relative;width:52px;height:30px;min-width:52px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--bg2);border:2px solid rgba(255,255,255,.15);border-radius:999px;cursor:pointer;transition:.2s}
+.slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:var(--purple);border-color:var(--purple)}
+.switch input:checked+.slider:before{transform:translateX(22px);background:#fff}
+.seg{display:flex;background:var(--bg2);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;padding:9px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:900;font-family:inherit;font-size:1rem;cursor:pointer}
+.seg button.on{background:var(--purple);color:#fff}
+/* lobby */
+.room-code{
+  font-family:'Bangers',cursive;font-size:3.2rem;letter-spacing:10px;text-align:center;color:var(--gold);
+  text-shadow:0 3px 0 rgba(0,0,0,.5);margin:4px 0 2px;
+}
+.room-sub{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;margin-bottom:12px}
+.players{display:flex;flex-direction:column;gap:8px}
+.p-row{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:12px;padding:10px 12px}
+.p-emoji{font-size:1.5rem}
+.p-name{font-weight:800;flex:1}
+.badge{font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:3px 9px;border-radius:999px}
+.badge.host{background:rgba(255,196,77,.18);color:var(--gold)}
+.badge.you{background:rgba(77,214,255,.15);color:var(--cyan)}
+.badge.voted{background:rgba(61,220,132,.15);color:var(--green)}
+/* role card */
+.role-card{
+  border-radius:20px;padding:26px 18px;text-align:center;user-select:none;cursor:pointer;
+  background:repeating-linear-gradient(45deg,var(--card2),var(--card2) 14px,var(--card) 14px,var(--card) 28px);
+  border:2px solid rgba(255,255,255,.12);min-height:170px;display:flex;flex-direction:column;justify-content:center;gap:8px;
+}
+.role-card .peek-hint{color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.8rem}
+.role-card .big{font-family:'Bangers',cursive;font-size:2.4rem;letter-spacing:2px;line-height:1.1}
+.role-card.revealed.crew{background:linear-gradient(140deg,#173a2c,#1f5c40);border-color:var(--green)}
+.role-card.revealed.imp{background:linear-gradient(140deg,#4a1024,#7a1533);border-color:var(--pink)}
+.word-cat{color:var(--muted);font-weight:800;font-size:.85rem}
+.order-list{display:flex;flex-direction:column;gap:6px;counter-reset:ord}
+.order-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border-radius:10px;padding:8px 12px;font-weight:800}
+.order-item::before{
+  counter-increment:ord;content:counter(ord);font-family:'Bangers',cursive;color:var(--purple);
+  width:22px;text-align:center;font-size:1.15rem;
+}
+.order-item.first{border:1px solid var(--gold)}
+.order-item.first::after{content:"speaks first";margin-left:auto;font-size:.7rem;color:var(--gold);font-weight:900;text-transform:uppercase;letter-spacing:1px}
+/* voting */
+.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vote-btn{
+  background:var(--bg2);border:2px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 8px;text-align:center;
+  cursor:pointer;font-family:inherit;color:var(--text);font-weight:800;font-size:1rem;transition:.12s;
+}
+.vote-btn .v-emoji{font-size:1.7rem;display:block;margin-bottom:4px}
+.vote-btn.sel{border-color:var(--pink);background:rgba(255,92,138,.14)}
+.vote-btn:disabled{opacity:.45;cursor:not-allowed}
+/* reveal */
+.reveal-banner{font-family:'Bangers',cursive;font-size:2rem;text-align:center;letter-spacing:2px;margin-bottom:4px}
+.reveal-banner.crew{color:var(--green)}
+.reveal-banner.imp{color:var(--pink)}
+.reveal-word{text-align:center;font-weight:900;font-size:1.3rem;margin-bottom:10px}
+.reveal-word span{color:var(--gold)}
+.tally{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tally-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border-radius:10px;padding:8px 12px;font-weight:700;font-size:.92rem}
+.tally-row .cnt{margin-left:auto;font-family:'Bangers',cursive;font-size:1.2rem;color:var(--cyan)}
+.tally-row.imp-row{border:1px solid var(--pink)}
+.guesses{margin-top:10px}
+.guess-row{background:rgba(255,196,77,.08);border:1px dashed rgba(255,196,77,.4);border-radius:10px;padding:8px 12px;font-weight:700;font-size:.92rem;margin-top:6px}
+/* misc */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.topbar .code-mini{font-family:'Bangers',cursive;letter-spacing:3px;color:var(--gold);font-size:1.2rem}
+.leave{background:none;border:none;color:var(--muted);font-weight:800;cursor:pointer;font-family:inherit;font-size:.85rem;text-decoration:underline}
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);opacity:0;
+  background:var(--card2);border:1px solid var(--purple);color:var(--text);font-weight:800;
+  padding:11px 20px;border-radius:999px;transition:.25s;z-index:50;max-width:90vw;text-align:center;
+}
+.toast.show{transform:translateX(-50%);opacity:1}
+.conn{position:fixed;top:10px;right:12px;font-size:.7rem;font-weight:900;letter-spacing:1px;color:var(--muted)}
+.conn.ok{color:var(--green)}
+.conn.bad{color:var(--danger)}
+.section-title{font-family:'Bangers',cursive;font-size:1.3rem;letter-spacing:1.5px;color:var(--cyan);margin-bottom:8px}
+.waiting{color:var(--muted);font-weight:700;text-align:center;padding:6px 0}
+.host-note{color:var(--muted);font-size:.82rem;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="conn" id="conn">OFFLINE</div>
+<div class="wrap">
+  <h1 class="logo">ANIME IMPOSTOR</h1>
+  <div class="tagline">One word. One faker. Play together from anywhere.</div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="card">
+      <label class="lbl">Your name</label>
+      <div class="avatar-pick">
+        <div class="avatar" id="avatar" title="Tap to change">🍥</div>
+        <input type="text" id="name-input" maxlength="14" placeholder="e.g. Kakashi">
+      </div>
+    </div>
+    <div class="card">
+      <button class="btn" id="btn-goto-create">CREATE A ROOM</button>
+      <div style="height:6px"></div>
+      <label class="lbl" style="margin-top:12px">Or join with a code</label>
+      <input type="text" id="code-input" class="code-input" maxlength="4" placeholder="ABCD" autocomplete="off">
+      <button class="btn alt" id="btn-join">JOIN ROOM</button>
+      <div class="hint">Everyone opens this page on their own phone or computer. Chat happens in your Discord call, this app just deals the secret word.</div>
+    </div>
+  </div>
+
+  <!-- CREATE / SETTINGS -->
+  <div class="screen" id="screen-create">
+    <div class="card">
+      <div class="section-title">WORD CATEGORIES</div>
+      <div class="cat-tools"><a id="cats-all">Select all</a><a id="cats-none">Clear</a></div>
+      <div class="cats" id="cats"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">RULES</div>
+      <div class="toggle-row">
+        <div>
+          <div class="t-label">Impostor sees the category</div>
+          <div class="t-sub">Gives the faker a fighting chance</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-hint" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div style="flex:1">
+          <div class="t-label">Impostors</div>
+          <div class="t-sub">Two impostors needs 6+ players</div>
+        </div>
+        <div class="seg" style="width:120px"><button data-n="1" class="on">1</button><button data-n="2">2</button></div>
+      </div>
+    </div>
+    <button class="btn gold" id="btn-create">OPEN THE LOBBY</button>
+    <button class="btn ghost" id="btn-back-home">Back</button>
+  </div>
+
+  <!-- LOBBY -->
+  <div class="screen" id="screen-lobby">
+    <div class="card">
+      <div class="room-code" id="lobby-code">----</div>
+      <div class="room-sub" id="lobby-cats-sub"></div>
+      <button class="btn alt" id="btn-copy-link">COPY INVITE LINK</button>
+    </div>
+    <div class="card">
+      <div class="section-title">PLAYERS <span id="lobby-count" style="color:var(--muted);font-family:'Nunito';font-size:.9rem"></span></div>
+      <div class="players" id="lobby-players"></div>
+    </div>
+    <button class="btn" id="btn-start" style="display:none">START GAME</button>
+    <div class="host-note" id="lobby-note"></div>
+    <button class="btn ghost" id="btn-leave-lobby">Leave room</button>
+  </div>
+
+  <!-- PLAY (playing / voting / reveal) -->
+  <div class="screen" id="screen-play">
+    <div class="topbar">
+      <span class="code-mini" id="play-code"></span>
+      <span style="color:var(--muted);font-weight:800;font-size:.85rem" id="round-label"></span>
+      <button class="leave" id="btn-leave-game">leave</button>
+    </div>
+
+    <div id="phase-playing" style="display:none">
+      <div class="role-card" id="role-card">
+        <div class="peek-hint" id="peek-hint">HOLD TO PEEK AT YOUR CARD</div>
+        <div class="big" id="role-big" style="display:none"></div>
+        <div class="word-cat" id="role-sub" style="display:none"></div>
+      </div>
+      <div class="hint" style="text-align:center">Hold the card to see it. Let go and it hides again, safe for screen sharing.</div>
+      <div class="card" style="margin-top:14px">
+        <div class="section-title">SPEAKING ORDER</div>
+        <div class="order-list" id="order-list"></div>
+        <div class="hint">Go around in this order in your Discord call. Each person says ONE word linked to the secret word. Then vote.</div>
+      </div>
+      <button class="btn" id="btn-voting" style="display:none">START THE VOTE</button>
+      <div class="host-note" id="playing-note"></div>
+    </div>
+
+    <div id="phase-voting" style="display:none">
+      <div class="card">
+        <div class="section-title">WHO IS THE IMPOSTOR?</div>
+        <div class="vote-grid" id="vote-grid"></div>
+        <div class="waiting" id="vote-waiting"></div>
+      </div>
+    </div>
+
+    <div id="phase-reveal" style="display:none">
+      <div class="card">
+        <div class="reveal-banner" id="reveal-banner"></div>
+        <div class="reveal-word" id="reveal-word"></div>
+        <div class="tally" id="reveal-tally"></div>
+        <div class="guesses" id="reveal-guesses"></div>
+        <div id="guess-box" style="display:none;margin-top:12px">
+          <label class="lbl">You got caught! Guess the word to steal the win</label>
+          <input type="text" id="guess-input" maxlength="40" placeholder="Your guess...">
+          <button class="btn gold" id="btn-guess">SUBMIT GUESS</button>
+        </div>
+      </div>
+      <button class="btn" id="btn-next-round" style="display:none">NEXT ROUND</button>
+      <button class="btn alt" id="btn-back-lobby" style="display:none">BACK TO LOBBY</button>
+      <div class="host-note" id="reveal-note"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ============ CONFIG ============ */
+const SUPABASE_URL = 'https://smyoxapczplwlujjerug.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_GQbfzIzsAvnioMg_0MsgEQ__PdisPT9';
+
+/* ============ WORD BANK ============ */
+const WORDS = {
+  'Naruto': ['Naruto','Sasuke','Sakura','Kakashi','Itachi','Rasengan','Sharingan','Kurama','Hidden Leaf Village','Akatsuki','Chunin Exams','Jiraiya','Orochimaru','Gaara','Hinata','Shadow Clone','Madara','Rock Lee','Tsunade','Pain','Ichiraku Ramen'],
+  'One Piece': ['Luffy','Zoro','Nami','Sanji','Usopp','Chopper','Nico Robin','Thousand Sunny','Devil Fruit','Grand Line','Gear Five','Shanks','Whitebeard','Kaido','Ace','Wano','Haki','Straw Hat','Marineford','Buggy','Going Merry'],
+  'Dragon Ball': ['Goku','Vegeta','Gohan','Piccolo','Frieza','Cell','Majin Buu','Kamehameha','Super Saiyan','Dragon Balls','Shenron','Master Roshi','Krillin','Trunks','Beerus','Ultra Instinct','Namek','Scouter','Fusion Dance','Senzu Bean'],
+  'Attack on Titan': ['Eren','Mikasa','Armin','Levi','Colossal Titan','The Walls','ODM Gear','Survey Corps','Founding Titan','The Rumbling','Annie','Reiner','Marley','Paradis','The Basement','Erwin','Hange','Sasha','Beast Titan','Shifter'],
+  'Demon Slayer': ['Tanjiro','Nezuko','Zenitsu','Inosuke','Muzan','Hashira','Rengoku','Water Breathing','Nichirin Sword','Mugen Train','Akaza','Giyu','Shinobu','Kanao','Boar Head','Sun Breathing','Tengen','Final Selection','Demon Blood Art','Wisteria'],
+  'Jujutsu Kaisen': ['Gojo','Yuji','Megumi','Nobara','Sukuna','Cursed Energy','Domain Expansion','Infinity','Panda','Maki','Nanami','Mahito','Shibuya','Cursed Finger','Six Eyes','Todo','Geto','Hollow Purple','Black Flash','Ten Shadows'],
+  'My Hero Academia': ['Deku','Bakugo','Todoroki','All Might','Quirk','One For All','UA High','Uraraka','Eraserhead','Endeavor','Shigaraki','League of Villains','Plus Ultra','All For One','Froppy','Kirishima','Sports Festival','Gran Torino','Hawks','Hero Licence'],
+  'Death Note': ['Light Yagami','L','Ryuk','Death Note','Shinigami','Kira','Misa','Near','Mello','Potato Crisps','Task Force','Apple','Rem','Watari','Shinigami Eyes','Tennis Match','13 Day Rule','Sakura TV','Yotsuba','Second Kira'],
+  'Studio Ghibli': ['Totoro','Spirited Away','No-Face','Howl','Calcifer','Princess Mononoke','Kiki','Jiji','Ponyo','Catbus','Haku','Chihiro','Laputa','Nausicaa','Porco Rosso','Soot Sprites','The Bathhouse','Moving Castle','San','Arrietty'],
+  'Pokemon': ['Pikachu','Ash','Charizard','Mewtwo','Pokeball','Team Rocket','Gym Badge','Eevee','Snorlax','Misty','Brock','Professor Oak','Gyarados','Squirtle','Bulbasaur','Jigglypuff','Pokedex','Evolution','Elite Four','Shiny'],
+  'Bleach': ['Ichigo','Rukia','Zangetsu','Soul Reaper','Hollow','Bankai','Aizen','Byakuya','Kenpachi','Soul Society','Zanpakuto','Urahara','Orihime','Uryu','Chad','Renji','Espada','Hueco Mundo','Toshiro','Gotei 13'],
+  'Hunter x Hunter': ['Gon','Killua','Kurapika','Leorio','Hisoka','Nen','Hunter Exam','Greed Island','Chimera Ant','Meruem','Netero','Phantom Troupe','Chrollo','Godspeed','Jajanken','Zoldyck Family','Heavens Arena','Illumi','Biscuit','Komugi'],
+  'Chainsaw Man': ['Denji','Pochita','Makima','Power','Aki','Chainsaw Devil','Blood Devil','Devil Hunter','Gun Devil','Future Devil','Kobeni','Himeno','Public Safety','Devil Contract','Darkness Devil','Reze','Angel Devil','Katana Man','Control Devil','Eternity Devil'],
+  'Spy x Family': ['Loid','Anya','Yor','Bond','Peanuts','Eden Academy','Twilight','Thorn Princess','Telepathy','WISE','Stella Star','Operation Strix','Franky','Damian','Becky','Ostania','Mind Reading','Assassin','Tonitrus Bolt','Elegant'],
+  'One Punch Man': ['Saitama','Genos','One Punch','Bald Cape','Hero Association','Mumen Rider','King','Tatsumaki','Fubuki','Garou','Boros','Sonic','S-Class','Serious Punch','Monster Association','Bang','Watchdog Man','Metal Knight','Zombieman','100 Push-Ups'],
+  'Anime Titles': ['Fullmetal Alchemist','Code Geass','Steins;Gate','Sword Art Online','Tokyo Ghoul','Black Clover','Fairy Tail','Mob Psycho 100','Vinland Saga','Berserk','Sailor Moon','Evangelion','Cowboy Bebop','Akira','Haikyuu','Blue Lock','Frieren','Oshi no Ko','Re:Zero','Solo Leveling'],
+  'Anime Culture': ['Senpai','Waifu','Tsundere','Isekai','Nani','Plot Armour','Filler Episode','Opening Song','Manga','Cosplay','Otaku','Sensei','Kawaii','Chibi','Sub vs Dub','Beach Episode','Power of Friendship','Training Arc','Nosebleed','Anime Convention'],
+};
+const CATEGORIES = Object.keys(WORDS);
+const EMOJIS = ['🍥','🗡️','⚡','🔥','🌸','👺','🐉','🦊','😈','🎌','🍙','👊','🌀','💥','🎭','🐸','🌙','⭐','🍜','🐼'];
+
+/* ============ STATE ============ */
+let sbClient = null, channel = null;
+let roomCode = '', myId = '', myName = '', myEmoji = '';
+let presencePlayers = [];      // [{id,name,emoji,joinedAt}]
+let game = null;               // latest broadcast game state (null = lobby, or {phase:'lobby',settings})
+let mySettings = { categories: CATEGORIES.slice(), hint: true, impostors: 1 };
+let subscribed = false;
+let rebroadcastTimer = null;
+
+myId = sessionStorage.getItem('imp_id') || ('p_' + Math.random().toString(36).slice(2, 10));
+sessionStorage.setItem('imp_id', myId);
+myEmoji = sessionStorage.getItem('imp_emoji') || EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+sessionStorage.setItem('imp_emoji', myEmoji);
+
+/* ============ HELPERS ============ */
+const $ = s => document.getElementById(s);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600); }
+function show(screen) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(screen).classList.add('active'); }
+function isHost() {
+  if (!presencePlayers.length) return false;
+  const sorted = presencePlayers.slice().sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
+  return sorted[0].id === myId;
+}
+function playerById(id) {
+  const inGame = game && game.players && game.players.find(p => p.id === id);
+  return inGame || presencePlayers.find(p => p.id === id) || { id, name: '???', emoji: '❓' };
+}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ============ SUPABASE / ROOM ============ */
+function ensureClient() {
+  if (sbClient) return true;
+  if (SUPABASE_URL.startsWith('__')) { toast('App not configured: missing Supabase keys'); return false; }
+  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  return true;
+}
+
+function joinRoom(code, thenCb) {
+  if (!ensureClient()) return;
+  roomCode = code.toUpperCase();
+  subscribed = false;
+  $('conn').textContent = 'CONNECTING'; $('conn').className = 'conn';
+  channel = sbClient.channel('impostor:' + roomCode, {
+    config: { broadcast: { self: true }, presence: { key: myId, enabled: true } },
+  });
+
+  channel.on('presence', { event: 'sync' }, () => {
+    const state = channel.presenceState();
+    presencePlayers = Object.keys(state).map(k => {
+      const m = state[k][0];
+      return { id: k, name: m.name, emoji: m.emoji, joinedAt: m.joinedAt };
+    });
+    render();
+  });
+
+  channel.on('presence', { event: 'join' }, () => {
+    // Host re-sends current state so refreshers and late joiners catch up
+    if (isHost()) {
+      clearTimeout(rebroadcastTimer);
+      rebroadcastTimer = setTimeout(() => { if (game) sendState(game); }, 600);
+    }
+  });
+
+  channel.on('broadcast', { event: 'state' }, ({ payload }) => {
+    // Ignore stale lobby rebroadcasts that would wipe an in-progress round
+    if (game && payload.game && game.round && payload.game.round && payload.game.round < game.round) return;
+    game = payload.game;
+    render();
+  });
+
+  channel.on('broadcast', { event: 'vote' }, ({ payload }) => {
+    if (!game || game.phase !== 'voting' || payload.round !== game.round) return;
+    game.votes[payload.voterId] = payload.targetId;
+    maybeFinishVote();
+    render();
+  });
+
+  channel.on('broadcast', { event: 'guess' }, ({ payload }) => {
+    if (!game || game.phase !== 'reveal' || payload.round !== game.round) return;
+    game.guesses = game.guesses || {};
+    game.guesses[payload.playerId] = payload.guess;
+    render();
+  });
+
+  channel.subscribe(async status => {
+    if (status === 'SUBSCRIBED') {
+      subscribed = true;
+      $('conn').textContent = 'LIVE'; $('conn').className = 'conn ok';
+      await channel.track({ name: myName, emoji: myEmoji, joinedAt: Date.now() });
+      if (thenCb) thenCb();
+    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+      $('conn').textContent = 'CONNECTION LOST'; $('conn').className = 'conn bad';
+    }
+  });
+}
+
+function leaveRoom() {
+  if (channel) { sbClient.removeChannel(channel); channel = null; }
+  roomCode = ''; game = null; presencePlayers = []; subscribed = false;
+  $('conn').textContent = 'OFFLINE'; $('conn').className = 'conn';
+  history.replaceState(null, '', location.pathname);
+  show('screen-home');
+}
+
+function sendState(g) {
+  if (!channel) return;
+  channel.send({ type: 'broadcast', event: 'state', payload: { game: g } });
+}
+
+/* ============ GAME LOGIC (host actions) ============ */
+function startRound() {
+  const players = presencePlayers.slice().sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
+  if (players.length < 2) { toast('You need at least 2 players (3+ is best)'); return; }
+  const settings = (game && game.settings) || mySettings;
+  const nImp = players.length >= 6 ? settings.impostors : 1;
+  const pool = [];
+  settings.categories.forEach(c => (WORDS[c] || []).forEach(w => pool.push({ w, c })));
+  const used = (game && game.usedWords) || [];
+  let avail = pool.filter(p => !used.includes(p.w));
+  if (!avail.length) avail = pool; // recycled every word, start over
+  const pick = avail[Math.floor(Math.random() * avail.length)];
+  const impostorIds = shuffle(players.map(p => p.id)).slice(0, nImp);
+  game = {
+    phase: 'playing',
+    round: ((game && game.round) || 0) + 1,
+    players: players.map(p => ({ id: p.id, name: p.name, emoji: p.emoji })),
+    order: shuffle(players.map(p => p.id)),
+    impostorIds,
+    word: pick.w,
+    category: pick.c,
+    settings,
+    usedWords: used.concat([pick.w]).slice(-200),
+    votes: {},
+    guesses: {},
+  };
+  sendState(game);
+}
+
+function startVoting() {
+  if (!game) return;
+  game = Object.assign({}, game, { phase: 'voting', votes: {}, guesses: {} });
+  sendState(game);
+}
+
+function backToLobby() {
+  game = { phase: 'lobby', settings: (game && game.settings) || mySettings, round: (game && game.round) || 0, usedWords: (game && game.usedWords) || [] };
+  sendState(game);
+}
+
+function maybeFinishVote() {
+  if (!game || game.phase !== 'voting') return;
+  const voters = game.players.map(p => p.id);
+  const done = voters.every(id => game.votes[id]);
+  if (done) { game.phase = 'reveal'; }
+}
+
+function computeResults() {
+  const tally = {};
+  Object.values(game.votes).forEach(t => { tally[t] = (tally[t] || 0) + 1; });
+  let top = null, topN = 0, tie = false;
+  Object.entries(tally).forEach(([id, n]) => {
+    if (n > topN) { top = id; topN = n; tie = false; }
+    else if (n === topN) { tie = true; }
+  });
+  const caught = !tie && top && game.impostorIds.includes(top);
+  return { tally, top: tie ? null : top, tie, caught };
+}
+
+/* ============ RENDER ============ */
+function render() {
+  if (!roomCode) return;
+  const phase = game ? game.phase : 'lobby';
+  if (phase === 'lobby') { renderLobby(); show('screen-lobby'); }
+  else { renderPlay(); show('screen-play'); }
+}
+
+function renderLobby() {
+  $('lobby-code').textContent = roomCode;
+  const settings = (game && game.settings) || (isHost() ? mySettings : null);
+  $('lobby-cats-sub').textContent = settings
+    ? settings.categories.length + ' of ' + CATEGORIES.length + ' categories in play' + (settings.impostors === 2 ? ', 2 impostors with 6+ players' : '')
+    : 'Waiting for host settings...';
+  const sorted = presencePlayers.slice().sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
+  $('lobby-count').textContent = '(' + sorted.length + ')';
+  $('lobby-players').innerHTML = sorted.map((p, i) =>
+    '<div class="p-row"><span class="p-emoji">' + p.emoji + '</span><span class="p-name">' + esc(p.name) + '</span>'
+    + (i === 0 ? '<span class="badge host">Host</span>' : '')
+    + (p.id === myId ? '<span class="badge you">You</span>' : '') + '</div>'
+  ).join('');
+  const host = isHost();
+  $('btn-start').style.display = host ? 'block' : 'none';
+  $('lobby-note').textContent = host
+    ? (sorted.length < 3 ? 'Best with 3 or more players. Share the invite link in Discord!' : 'Everyone in? Hit start.')
+    : 'Waiting for the host to start the game...';
+}
+
+function renderPlay() {
+  $('play-code').textContent = roomCode;
+  $('round-label').textContent = 'ROUND ' + game.round;
+  const host = isHost();
+  const amImpostor = game.impostorIds.includes(myId);
+  const inRound = game.players.some(p => p.id === myId);
+
+  ['phase-playing', 'phase-voting', 'phase-reveal'].forEach(id => $(id).style.display = 'none');
+
+  if (game.phase === 'playing') {
+    $('phase-playing').style.display = 'block';
+    // role card content set on peek (see hold handlers); store current role text
+    roleContent = !inRound
+      ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
+      : amImpostor
+        ? { big: 'IMPOSTOR!', sub: game.settings.hint ? 'Category hint: ' + game.category : 'No hints. Blend in and survive.', cls: 'imp' }
+        : { big: game.word, sub: 'Category: ' + game.category, cls: 'crew' };
+    hideRole();
+    $('order-list').innerHTML = game.order.map((id, i) => {
+      const p = playerById(id);
+      return '<div class="order-item' + (i === 0 ? ' first' : '') + '">' + p.emoji + ' ' + esc(p.name) + (id === myId ? ' (you)' : '') + '</div>';
+    }).join('');
+    $('btn-voting').style.display = host ? 'block' : 'none';
+    $('playing-note').textContent = host ? '' : 'The host starts the vote when the table talk is done.';
+  }
+
+  if (game.phase === 'voting') {
+    $('phase-voting').style.display = 'block';
+    const myVote = game.votes[myId];
+    $('vote-grid').innerHTML = game.players.map(p =>
+      '<button class="vote-btn' + (myVote === p.id ? ' sel' : '') + '" data-target="' + p.id + '"' + ((myVote || !inRound) ? ' disabled' : '') + '>'
+      + '<span class="v-emoji">' + p.emoji + '</span>' + esc(p.name)
+      + (game.votes[p.id] ? ' <span class="badge voted">voted</span>' : '')
+      + '</button>'
+    ).join('');
+    document.querySelectorAll('.vote-btn:not([disabled])').forEach(b => b.addEventListener('click', () => castVote(b.dataset.target)));
+    const nVoted = Object.keys(game.votes).length;
+    $('vote-waiting').textContent = myVote ? 'Vote locked in. Waiting: ' + nVoted + '/' + game.players.length : 'Tap a player to accuse them. ' + nVoted + '/' + game.players.length + ' voted.';
+  }
+
+  if (game.phase === 'reveal') {
+    $('phase-reveal').style.display = 'block';
+    const r = computeResults();
+    const impNames = game.impostorIds.map(id => playerById(id)).map(p => p.emoji + ' ' + esc(p.name)).join(' and ');
+    const banner = $('reveal-banner');
+    if (r.caught) { banner.textContent = 'IMPOSTOR CAUGHT!'; banner.className = 'reveal-banner crew'; }
+    else if (r.tie) { banner.textContent = 'TIE VOTE! IMPOSTOR ESCAPES'; banner.className = 'reveal-banner imp'; }
+    else { banner.textContent = 'WRONG! IMPOSTOR WINS'; banner.className = 'reveal-banner imp'; }
+    $('reveal-word').innerHTML = 'The word was <span>' + esc(game.word) + '</span> (' + esc(game.category) + ')<br>Impostor' + (game.impostorIds.length > 1 ? 's' : '') + ': ' + impNames;
+    $('reveal-tally').innerHTML = game.players.map(p => {
+      const n = r.tally[p.id] || 0;
+      const votedFor = game.votes[p.id] ? playerById(game.votes[p.id]).name : '?';
+      return '<div class="tally-row' + (game.impostorIds.includes(p.id) ? ' imp-row' : '') + '">' + p.emoji + ' ' + esc(p.name)
+        + ' <span style="color:var(--muted)">accused ' + esc(votedFor) + '</span><span class="cnt">' + n + '</span></div>';
+    }).join('');
+    const guesses = game.guesses || {};
+    $('reveal-guesses').innerHTML = Object.entries(guesses).map(([id, g]) =>
+      '<div class="guess-row">🎯 ' + esc(playerById(id).name) + ' guesses: <b>' + esc(g) + '</b>, you decide if that counts!</div>'
+    ).join('');
+    $('guess-box').style.display = (r.caught && game.impostorIds.includes(myId) && !guesses[myId]) ? 'block' : 'none';
+    $('btn-next-round').style.display = host ? 'block' : 'none';
+    $('btn-back-lobby').style.display = host ? 'block' : 'none';
+    $('reveal-note').textContent = host ? '' : 'Waiting for the host to start the next round...';
+  }
+}
+
+/* role card hold-to-peek */
+let roleContent = null;
+function showRole() {
+  if (!roleContent) return;
+  const c = $('role-card');
+  c.classList.add('revealed', roleContent.cls);
+  c.classList.remove(roleContent.cls === 'imp' ? 'crew' : 'imp');
+  $('peek-hint').style.display = 'none';
+  $('role-big').style.display = 'block'; $('role-big').textContent = roleContent.big;
+  $('role-sub').style.display = 'block'; $('role-sub').textContent = roleContent.sub;
+}
+function hideRole() {
+  const c = $('role-card');
+  c.classList.remove('revealed', 'imp', 'crew');
+  $('peek-hint').style.display = 'block';
+  $('role-big').style.display = 'none';
+  $('role-sub').style.display = 'none';
+}
+
+function castVote(targetId) {
+  if (!game || game.phase !== 'voting' || game.votes[myId]) return;
+  channel.send({ type: 'broadcast', event: 'vote', payload: { voterId: myId, targetId, round: game.round } });
+}
+
+/* ============ UI WIRING ============ */
+$('avatar').textContent = myEmoji;
+$('avatar').addEventListener('click', () => {
+  myEmoji = EMOJIS[(EMOJIS.indexOf(myEmoji) + 1) % EMOJIS.length];
+  sessionStorage.setItem('imp_emoji', myEmoji);
+  $('avatar').textContent = myEmoji;
+});
+$('name-input').value = sessionStorage.getItem('imp_name') || '';
+
+function grabName() {
+  myName = $('name-input').value.trim();
+  if (!myName) { toast('Enter your name first!'); return false; }
+  sessionStorage.setItem('imp_name', myName);
+  return true;
+}
+
+/* categories UI */
+const catsEl = $('cats');
+CATEGORIES.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'cat on'; d.textContent = c; d.dataset.cat = c;
+  d.addEventListener('click', () => { d.classList.toggle('on'); syncCats(); });
+  catsEl.appendChild(d);
+});
+function syncCats() {
+  mySettings.categories = Array.from(document.querySelectorAll('.cat.on')).map(d => d.dataset.cat);
+}
+$('cats-all').addEventListener('click', () => { document.querySelectorAll('.cat').forEach(d => d.classList.add('on')); syncCats(); });
+$('cats-none').addEventListener('click', () => { document.querySelectorAll('.cat').forEach(d => d.classList.remove('on')); syncCats(); });
+$('opt-hint').addEventListener('change', e => { mySettings.hint = e.target.checked; });
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.seg button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); mySettings.impostors = parseInt(b.dataset.n, 10);
+}));
+
+$('btn-goto-create').addEventListener('click', () => { if (grabName()) show('screen-create'); });
+$('btn-back-home').addEventListener('click', () => show('screen-home'));
+
+$('btn-create').addEventListener('click', () => {
+  syncCats();
+  if (!mySettings.categories.length) { toast('Pick at least one category!'); return; }
+  const code = Array.from({ length: 4 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random() * 24)]).join('');
+  joinRoom(code, () => {
+    game = { phase: 'lobby', settings: mySettings, round: 0, usedWords: [] };
+    sendState(game);
+    history.replaceState(null, '', location.pathname + '?room=' + code);
+  });
+  show('screen-lobby');
+  $('lobby-code').textContent = code;
+});
+
+$('btn-join').addEventListener('click', () => {
+  const code = $('code-input').value.trim().toUpperCase();
+  if (code.length !== 4) { toast('Room codes are 4 letters'); return; }
+  if (!grabName()) return;
+  joinRoom(code, () => { history.replaceState(null, '', location.pathname + '?room=' + code); });
+  show('screen-lobby');
+  $('lobby-code').textContent = code;
+});
+
+$('btn-copy-link').addEventListener('click', async () => {
+  const url = location.origin + location.pathname + '?room=' + roomCode;
+  try { await navigator.clipboard.writeText(url); toast('Invite link copied! Paste it in Discord'); }
+  catch (e) { prompt('Copy this link:', url); }
+});
+
+$('btn-start').addEventListener('click', startRound);
+$('btn-voting').addEventListener('click', startVoting);
+$('btn-next-round').addEventListener('click', startRound);
+$('btn-back-lobby').addEventListener('click', backToLobby);
+$('btn-leave-lobby').addEventListener('click', leaveRoom);
+$('btn-leave-game').addEventListener('click', () => { if (confirm('Leave the game?')) leaveRoom(); });
+
+$('btn-guess').addEventListener('click', () => {
+  const g = $('guess-input').value.trim();
+  if (!g) return;
+  channel.send({ type: 'broadcast', event: 'guess', payload: { playerId: myId, guess: g, round: game.round } });
+});
+
+/* hold-to-peek handlers (mouse + touch) */
+const rc = $('role-card');
+['mousedown', 'touchstart'].forEach(ev => rc.addEventListener(ev, e => { e.preventDefault(); showRole(); }));
+['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(ev => rc.addEventListener(ev, () => hideRole()));
+
+/* deep link ?room=CODE */
+const params = new URLSearchParams(location.search);
+const linkRoom = (params.get('room') || '').toUpperCase();
+if (/^[A-Z]{4}$/.test(linkRoom)) {
+  $('code-input').value = linkRoom;
+  toast('Enter your name, then hit JOIN ROOM');
+}
+</script>
+</body>
+</html>
