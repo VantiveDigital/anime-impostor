@@ -284,24 +284,79 @@ const SUPABASE_URL = 'https://smyoxapczplwlujjerug.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_GQbfzIzsAvnioMg_0MsgEQ__PdisPT9';
 
 /* ============ WORD BANK ============ */
+/* Categories are anime genres. Each pulls the most popular characters from the
+   top 15-20 shows in that genre, so every word is a well-known character. */
 const WORDS = {
-  'Naruto': ['Naruto','Sasuke','Sakura','Kakashi','Itachi','Rasengan','Sharingan','Kurama','Hidden Leaf Village','Akatsuki','Chunin Exams','Jiraiya','Orochimaru','Gaara','Hinata','Shadow Clone','Madara','Rock Lee','Tsunade','Pain','Ichiraku Ramen'],
-  'One Piece': ['Luffy','Zoro','Nami','Sanji','Usopp','Chopper','Nico Robin','Thousand Sunny','Devil Fruit','Grand Line','Gear Five','Shanks','Whitebeard','Kaido','Ace','Wano','Haki','Straw Hat','Marineford','Buggy','Going Merry'],
-  'Dragon Ball': ['Goku','Vegeta','Gohan','Piccolo','Frieza','Cell','Majin Buu','Kamehameha','Super Saiyan','Dragon Balls','Shenron','Master Roshi','Krillin','Trunks','Beerus','Ultra Instinct','Namek','Scouter','Fusion Dance','Senzu Bean'],
-  'Attack on Titan': ['Eren','Mikasa','Armin','Levi','Colossal Titan','The Walls','ODM Gear','Survey Corps','Founding Titan','The Rumbling','Annie','Reiner','Marley','Paradis','The Basement','Erwin','Hange','Sasha','Beast Titan','Shifter'],
-  'Demon Slayer': ['Tanjiro','Nezuko','Zenitsu','Inosuke','Muzan','Hashira','Rengoku','Water Breathing','Nichirin Sword','Mugen Train','Akaza','Giyu','Shinobu','Kanao','Boar Head','Sun Breathing','Tengen','Final Selection','Demon Blood Art','Wisteria'],
-  'Jujutsu Kaisen': ['Gojo','Yuji','Megumi','Nobara','Sukuna','Cursed Energy','Domain Expansion','Infinity','Panda','Maki','Nanami','Mahito','Shibuya','Cursed Finger','Six Eyes','Todo','Geto','Hollow Purple','Black Flash','Ten Shadows'],
-  'My Hero Academia': ['Deku','Bakugo','Todoroki','All Might','Quirk','One For All','UA High','Uraraka','Eraserhead','Endeavor','Shigaraki','League of Villains','Plus Ultra','All For One','Froppy','Kirishima','Sports Festival','Gran Torino','Hawks','Hero Licence'],
-  'Death Note': ['Light Yagami','L','Ryuk','Death Note','Shinigami','Kira','Misa','Near','Mello','Potato Crisps','Task Force','Apple','Rem','Watari','Shinigami Eyes','Tennis Match','13 Day Rule','Sakura TV','Yotsuba','Second Kira'],
-  'Studio Ghibli': ['Totoro','Spirited Away','No-Face','Howl','Calcifer','Princess Mononoke','Kiki','Jiji','Ponyo','Catbus','Haku','Chihiro','Laputa','Nausicaa','Porco Rosso','Soot Sprites','The Bathhouse','Moving Castle','San','Arrietty'],
-  'Pokemon': ['Pikachu','Ash','Charizard','Mewtwo','Pokeball','Team Rocket','Gym Badge','Eevee','Snorlax','Misty','Brock','Professor Oak','Gyarados','Squirtle','Bulbasaur','Jigglypuff','Pokedex','Evolution','Elite Four','Shiny'],
-  'Bleach': ['Ichigo','Rukia','Zangetsu','Soul Reaper','Hollow','Bankai','Aizen','Byakuya','Kenpachi','Soul Society','Zanpakuto','Urahara','Orihime','Uryu','Chad','Renji','Espada','Hueco Mundo','Toshiro','Gotei 13'],
-  'Hunter x Hunter': ['Gon','Killua','Kurapika','Leorio','Hisoka','Nen','Hunter Exam','Greed Island','Chimera Ant','Meruem','Netero','Phantom Troupe','Chrollo','Godspeed','Jajanken','Zoldyck Family','Heavens Arena','Illumi','Biscuit','Komugi'],
-  'Chainsaw Man': ['Denji','Pochita','Makima','Power','Aki','Chainsaw Devil','Blood Devil','Devil Hunter','Gun Devil','Future Devil','Kobeni','Himeno','Public Safety','Devil Contract','Darkness Devil','Reze','Angel Devil','Katana Man','Control Devil','Eternity Devil'],
-  'Spy x Family': ['Loid','Anya','Yor','Bond','Peanuts','Eden Academy','Twilight','Thorn Princess','Telepathy','WISE','Stella Star','Operation Strix','Franky','Damian','Becky','Ostania','Mind Reading','Assassin','Tonitrus Bolt','Elegant'],
-  'One Punch Man': ['Saitama','Genos','One Punch','Bald Cape','Hero Association','Mumen Rider','King','Tatsumaki','Fubuki','Garou','Boros','Sonic','S-Class','Serious Punch','Monster Association','Bang','Watchdog Man','Metal Knight','Zombieman','100 Push-Ups'],
-  'Anime Titles': ['Fullmetal Alchemist','Code Geass','Steins;Gate','Sword Art Online','Tokyo Ghoul','Black Clover','Fairy Tail','Mob Psycho 100','Vinland Saga','Berserk','Sailor Moon','Evangelion','Cowboy Bebop','Akira','Haikyuu','Blue Lock','Frieren','Oshi no Ko','Re:Zero','Solo Leveling'],
-  'Anime Culture': ['Senpai','Waifu','Tsundere','Isekai','Nani','Plot Armour','Filler Episode','Opening Song','Manga','Cosplay','Otaku','Sensei','Kawaii','Chibi','Sub vs Dub','Beach Episode','Power of Friendship','Training Arc','Nosebleed','Anime Convention'],
+  'Shonen Battle': [
+    // Naruto, One Piece, Dragon Ball, Bleach, MHA, JJK, Demon Slayer, HxH,
+    // Chainsaw Man, One Punch Man, Black Clover, Fairy Tail, FMA, Yu Yu Hakusho, Seven Deadly Sins
+    'Naruto','Sasuke','Kakashi','Itachi','Luffy','Zoro','Sanji','Shanks','Goku','Vegeta','Frieza',
+    'Ichigo','Rukia','Aizen','Deku','Bakugo','All Might','Gojo','Sukuna','Yuji','Tanjiro','Nezuko',
+    'Rengoku','Gon','Killua','Hisoka','Denji','Makima','Power','Saitama','Genos','Asta','Natsu',
+    'Edward Elric','Yusuke Urameshi','Meliodas',
+  ],
+  'Dark & Psychological': [
+    // Death Note, Attack on Titan, Tokyo Ghoul, Berserk, Monster, Vinland Saga,
+    // Parasyte, Psycho-Pass, Future Diary, Hellsing, Elfen Lied, Erased, Hell's Paradise
+    'Light Yagami','L','Ryuk','Misa','Near','Eren','Mikasa','Levi','Armin','Erwin','Annie','Reiner',
+    'Kaneki','Touka','Juuzou','Guts','Griffith','Casca','Johan Liebert','Dr Tenma','Thorfinn',
+    'Askeladd','Canute','Migi','Shinichi Izumi','Akane Tsunemori','Makishima','Yuno Gasai',
+    'Alucard','Lucy','Satoru Fujinuma','Gabimaru',
+  ],
+  'Isekai & Fantasy': [
+    // SAO, Re:Zero, Overlord, Konosuba, Slime, Mushoku Tensei, Shield Hero, Frieren,
+    // No Game No Life, Solo Leveling, DanMachi, Eminence in Shadow, Log Horizon
+    'Kirito','Asuna','Subaru','Rem','Ram','Emilia','Ainz','Albedo','Kazuma','Aqua','Megumin',
+    'Darkness','Rimuru','Milim','Rudeus','Roxy','Eris','Naofumi','Raphtalia','Frieren','Fern',
+    'Himmel','Stark','Sora','Shiro','Sung Jinwoo','Cha Hae-In','Bell Cranel','Hestia','Cid Kagenou',
+  ],
+  'Sports': [
+    // Haikyuu, Blue Lock, Kuroko's Basketball, Slam Dunk, Hajime no Ippo, Free,
+    // Yuri on Ice, Initial D, Megalobox, Food Wars, Eyeshield 21
+    'Hinata','Kageyama','Oikawa','Nishinoya','Tsukishima','Bokuto','Isagi','Bachira','Rin Itoshi',
+    'Barou','Nagi','Reo','Kuroko','Kagami','Aomine','Kise','Midorima','Akashi','Sakuragi','Rukawa',
+    'Ippo','Takamura','Haruka Nanase','Rin Matsuoka','Yuri Katsuki','Victor Nikiforov',
+    'Takumi Fujiwara','Soma Yukihira','Erina','Sena Kobayakawa',
+  ],
+  'Romance & Slice of Life': [
+    // Kaguya-sama, Toradora, Horimiya, Fruits Basket, Clannad, Your Lie in April,
+    // Rent-a-Girlfriend, My Dress-Up Darling, Komi Can't Communicate, K-On,
+    // Bocchi the Rock, Violet Evergarden, Oshi no Ko
+    'Kaguya','Miyuki Shirogane','Chika','Ishigami','Taiga','Ryuuji','Hori','Miyamura','Tohru Honda',
+    'Kyo Sohma','Yuki Sohma','Nagisa','Tomoya','Kousei','Kaori','Chizuru','Marin Kitagawa',
+    'Wakana Gojo','Komi','Tadano','Yui Hirasawa','Mio Akiyama','Bocchi','Nijika',
+    'Violet Evergarden','Ai Hoshino','Aqua Hoshino','Ruby Hoshino',
+  ],
+  'Comedy & Wholesome': [
+    // Spy x Family, Gintama, Mob Psycho 100, Saiki K, Grand Blue, Way of the Househusband,
+    // Great Teacher Onizuka, Sakamoto, Umaru-chan, Nichijou
+    'Anya','Loid','Yor','Bond','Damian','Becky','Franky','Gintoki','Kagura','Shinpachi','Hijikata',
+    'Okita','Mob','Reigen','Ritsu','Dimple','Saiki','Nendo','Teruhashi','Kaido','Onizuka',
+    'Tatsu the Immortal','Sakamoto','Umaru','Nano','Iori Kitahara','Kohei Imamura',
+  ],
+  'Mecha & Sci-Fi': [
+    // Evangelion, Gundam, Code Geass, Steins;Gate, Ghost in the Shell, Cowboy Bebop,
+    // Akira, Darling in the Franxx, Cyberpunk Edgerunners, Trigun, 86, Dr Stone
+    'Shinji','Rei Ayanami','Asuka','Misato','Gendo','Kaworu','Lelouch','C.C.','Suzaku','Kallen',
+    'Okabe','Kurisu','Mayuri','Daru','Amuro Ray','Char Aznable','Motoko Kusanagi','Batou',
+    'Spike Spiegel','Faye Valentine','Jet Black','Edward Wong','Ein','Kaneda','Tetsuo','Zero Two',
+    'Hiro','David Martinez','Lucy Kushinada','Rebecca','Vash the Stampede','Senku',
+  ],
+  'Ghibli & Anime Films': [
+    // Spirited Away, Totoro, Howl's Moving Castle, Princess Mononoke, Kiki, Ponyo,
+    // Your Name, Weathering With You, Suzume, A Silent Voice, The Boy and the Heron, Laputa
+    'Totoro','Catbus','Satsuki','Mei','Chihiro','Haku','No-Face','Yubaba','Boh','Howl','Sophie',
+    'Calcifer','Markl','San','Ashitaka','Kiki','Jiji','Ponyo','Sosuke','Taki','Mitsuha','Hodaka',
+    'Hina','Suzume','Souta','Shoya','Shoko','Mahito','The Grey Heron','Sheeta','Pazu',
+  ],
+  'Classics & Icons': [
+    // Sailor Moon, Pokemon, Yu-Gi-Oh, Digimon, Inuyasha, Detective Conan, Lupin III,
+    // Astro Boy, Doraemon, Ranma, Dragon Ball (original), Speed Racer, Captain Tsubasa
+    'Usagi','Tuxedo Mask','Sailor Mars','Luna','Pikachu','Ash','Misty','Brock','Charizard',
+    'Mewtwo','Jessie and James','Yugi','Seto Kaiba','Joey Wheeler','Blue-Eyes White Dragon',
+    'Agumon','Tai','Astro Boy','Doraemon','Nobita','Inuyasha','Kagome','Sesshomaru','Ranma',
+    'Detective Conan','Lupin','Zenigata','Kid Goku','Master Roshi','Speed Racer','Tsubasa',
+  ],
 };
 const CATEGORIES = Object.keys(WORDS);
 const EMOJIS = ['🍥','🗡️','⚡','🔥','🌸','👺','🐉','🦊','😈','🎌','🍙','👊','🌀','💥','🎭','🐸','🌙','⭐','🍜','🐼'];
