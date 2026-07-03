@@ -235,11 +235,11 @@ input[type=text]:focus{border-color:var(--purple)}
 
     <div id="phase-playing" style="display:none">
       <div class="role-card" id="role-card">
-        <div class="peek-hint" id="peek-hint">HOLD TO PEEK AT YOUR CARD</div>
+        <div class="peek-hint" id="peek-hint">CARD HIDDEN. TAP TO SHOW</div>
         <div class="big" id="role-big" style="display:none"></div>
         <div class="word-cat" id="role-sub" style="display:none"></div>
       </div>
-      <div class="hint" style="text-align:center">Hold the card to see it. Let go and it hides again, safe for screen sharing.</div>
+      <div class="hint" style="text-align:center">Your card stays open, it is only on your screen. Tap it to hide if you are screen sharing.</div>
       <div class="card" style="margin-top:14px">
         <div class="section-title">SPEAKING ORDER</div>
         <div class="order-list" id="order-list"></div>
@@ -290,72 +290,72 @@ const WORDS = {
   'Shonen Battle': [
     // Naruto, One Piece, Dragon Ball, Bleach, MHA, JJK, Demon Slayer, HxH,
     // Chainsaw Man, One Punch Man, Black Clover, Fairy Tail, FMA, Yu Yu Hakusho, Seven Deadly Sins
-    'Naruto','Sasuke','Kakashi','Itachi','Luffy','Zoro','Sanji','Shanks','Goku','Vegeta','Frieza',
-    'Ichigo','Rukia','Aizen','Deku','Bakugo','All Might','Gojo','Sukuna','Yuji','Tanjiro','Nezuko',
-    'Rengoku','Gon','Killua','Hisoka','Denji','Makima','Power','Saitama','Genos','Asta','Natsu',
-    'Edward Elric','Yusuke Urameshi','Meliodas',
+    ['Naruto','Naruto'],['Sasuke','Naruto'],['Kakashi','Naruto'],['Itachi','Naruto'],['Luffy','One Piece'],['Zoro','One Piece'],['Sanji','One Piece'],['Shanks','One Piece'],['Goku','Dragon Ball Z'],['Vegeta','Dragon Ball Z'],['Frieza','Dragon Ball Z'],
+    ['Ichigo','Bleach'],['Rukia','Bleach'],['Aizen','Bleach'],['Deku','My Hero Academia'],['Bakugo','My Hero Academia'],['All Might','My Hero Academia'],['Gojo','Jujutsu Kaisen'],['Sukuna','Jujutsu Kaisen'],['Yuji','Jujutsu Kaisen'],['Tanjiro','Demon Slayer'],['Nezuko','Demon Slayer'],
+    ['Rengoku','Demon Slayer'],['Gon','Hunter x Hunter'],['Killua','Hunter x Hunter'],['Hisoka','Hunter x Hunter'],['Denji','Chainsaw Man'],['Makima','Chainsaw Man'],['Power','Chainsaw Man'],['Saitama','One Punch Man'],['Genos','One Punch Man'],['Asta','Black Clover'],['Natsu','Fairy Tail'],
+    ['Edward Elric','Fullmetal Alchemist'],['Yusuke Urameshi','Yu Yu Hakusho'],['Meliodas','Seven Deadly Sins'],
   ],
   'Dark & Psychological': [
     // Death Note, Attack on Titan, Tokyo Ghoul, Berserk, Monster, Vinland Saga,
     // Parasyte, Psycho-Pass, Future Diary, Hellsing, Elfen Lied, Erased, Hell's Paradise
-    'Light Yagami','L','Ryuk','Misa','Near','Eren','Mikasa','Levi','Armin','Erwin','Annie','Reiner',
-    'Kaneki','Touka','Juuzou','Guts','Griffith','Casca','Johan Liebert','Dr Tenma','Thorfinn',
-    'Askeladd','Canute','Migi','Shinichi Izumi','Akane Tsunemori','Makishima','Yuno Gasai',
-    'Alucard','Lucy','Satoru Fujinuma','Gabimaru',
+    ['Light Yagami','Death Note'],['L','Death Note'],['Ryuk','Death Note'],['Misa','Death Note'],['Near','Death Note'],['Eren','Attack on Titan'],['Mikasa','Attack on Titan'],['Levi','Attack on Titan'],['Armin','Attack on Titan'],['Erwin','Attack on Titan'],['Annie','Attack on Titan'],['Reiner','Attack on Titan'],
+    ['Kaneki','Tokyo Ghoul'],['Touka','Tokyo Ghoul'],['Juuzou','Tokyo Ghoul'],['Guts','Berserk'],['Griffith','Berserk'],['Casca','Berserk'],['Johan Liebert','Monster'],['Dr Tenma','Monster'],['Thorfinn','Vinland Saga'],
+    ['Askeladd','Vinland Saga'],['Canute','Vinland Saga'],['Migi','Parasyte'],['Shinichi Izumi','Parasyte'],['Akane Tsunemori','Psycho-Pass'],['Makishima','Psycho-Pass'],['Yuno Gasai','Future Diary'],
+    ['Alucard','Hellsing'],['Lucy','Elfen Lied'],['Satoru Fujinuma','Erased'],['Gabimaru','Hell\'s Paradise'],
   ],
   'Isekai & Fantasy': [
     // SAO, Re:Zero, Overlord, Konosuba, Slime, Mushoku Tensei, Shield Hero, Frieren,
     // No Game No Life, Solo Leveling, DanMachi, Eminence in Shadow, Log Horizon
-    'Kirito','Asuna','Subaru','Rem','Ram','Emilia','Ainz','Albedo','Kazuma','Aqua','Megumin',
-    'Darkness','Rimuru','Milim','Rudeus','Roxy','Eris','Naofumi','Raphtalia','Frieren','Fern',
-    'Himmel','Stark','Sora','Shiro','Sung Jinwoo','Cha Hae-In','Bell Cranel','Hestia','Cid Kagenou',
+    ['Kirito','Sword Art Online'],['Asuna','Sword Art Online'],['Subaru','Re:Zero'],['Rem','Re:Zero'],['Ram','Re:Zero'],['Emilia','Re:Zero'],['Ainz','Overlord'],['Albedo','Overlord'],['Kazuma','Konosuba'],['Aqua','Konosuba'],['Megumin','Konosuba'],
+    ['Darkness','Konosuba'],['Rimuru','Reincarnated as a Slime'],['Milim','Reincarnated as a Slime'],['Rudeus','Mushoku Tensei'],['Roxy','Mushoku Tensei'],['Eris','Mushoku Tensei'],['Naofumi','Shield Hero'],['Raphtalia','Shield Hero'],['Frieren','Frieren'],['Fern','Frieren'],
+    ['Himmel','Frieren'],['Stark','Frieren'],['Sora','No Game No Life'],['Shiro','No Game No Life'],['Sung Jinwoo','Solo Leveling'],['Cha Hae-In','Solo Leveling'],['Bell Cranel','DanMachi'],['Hestia','DanMachi'],['Cid Kagenou','The Eminence in Shadow'],
   ],
   'Sports': [
     // Haikyuu, Blue Lock, Kuroko's Basketball, Slam Dunk, Hajime no Ippo, Free,
     // Yuri on Ice, Initial D, Megalobox, Food Wars, Eyeshield 21
-    'Hinata','Kageyama','Oikawa','Nishinoya','Tsukishima','Bokuto','Isagi','Bachira','Rin Itoshi',
-    'Barou','Nagi','Reo','Kuroko','Kagami','Aomine','Kise','Midorima','Akashi','Sakuragi','Rukawa',
-    'Ippo','Takamura','Haruka Nanase','Rin Matsuoka','Yuri Katsuki','Victor Nikiforov',
-    'Takumi Fujiwara','Soma Yukihira','Erina','Sena Kobayakawa',
+    ['Hinata','Haikyuu'],['Kageyama','Haikyuu'],['Oikawa','Haikyuu'],['Nishinoya','Haikyuu'],['Tsukishima','Haikyuu'],['Bokuto','Haikyuu'],['Isagi','Blue Lock'],['Bachira','Blue Lock'],['Rin Itoshi','Blue Lock'],
+    ['Barou','Blue Lock'],['Nagi','Blue Lock'],['Reo','Blue Lock'],['Kuroko','Kuroko\'s Basketball'],['Kagami','Kuroko\'s Basketball'],['Aomine','Kuroko\'s Basketball'],['Kise','Kuroko\'s Basketball'],['Midorima','Kuroko\'s Basketball'],['Akashi','Kuroko\'s Basketball'],['Sakuragi','Slam Dunk'],['Rukawa','Slam Dunk'],
+    ['Ippo','Hajime no Ippo'],['Takamura','Hajime no Ippo'],['Haruka Nanase','Free!'],['Rin Matsuoka','Free!'],['Yuri Katsuki','Yuri on Ice'],['Victor Nikiforov','Yuri on Ice'],
+    ['Takumi Fujiwara','Initial D'],['Soma Yukihira','Food Wars'],['Erina','Food Wars'],['Sena Kobayakawa','Eyeshield 21'],
   ],
   'Romance & Slice of Life': [
     // Kaguya-sama, Toradora, Horimiya, Fruits Basket, Clannad, Your Lie in April,
     // Rent-a-Girlfriend, My Dress-Up Darling, Komi Can't Communicate, K-On,
     // Bocchi the Rock, Violet Evergarden, Oshi no Ko
-    'Kaguya','Miyuki Shirogane','Chika','Ishigami','Taiga','Ryuuji','Hori','Miyamura','Tohru Honda',
-    'Kyo Sohma','Yuki Sohma','Nagisa','Tomoya','Kousei','Kaori','Chizuru','Marin Kitagawa',
-    'Wakana Gojo','Komi','Tadano','Yui Hirasawa','Mio Akiyama','Bocchi','Nijika',
-    'Violet Evergarden','Ai Hoshino','Aqua Hoshino','Ruby Hoshino',
+    ['Kaguya','Kaguya-sama'],['Miyuki Shirogane','Kaguya-sama'],['Chika','Kaguya-sama'],['Ishigami','Kaguya-sama'],['Taiga','Toradora'],['Ryuuji','Toradora'],['Hori','Horimiya'],['Miyamura','Horimiya'],['Tohru Honda','Fruits Basket'],
+    ['Kyo Sohma','Fruits Basket'],['Yuki Sohma','Fruits Basket'],['Nagisa','Clannad'],['Tomoya','Clannad'],['Kousei','Your Lie in April'],['Kaori','Your Lie in April'],['Chizuru','Rent-a-Girlfriend'],['Marin Kitagawa','My Dress-Up Darling'],
+    ['Wakana Gojo','My Dress-Up Darling'],['Komi','Komi Can\'t Communicate'],['Tadano','Komi Can\'t Communicate'],['Yui Hirasawa','K-On'],['Mio Akiyama','K-On'],['Bocchi','Bocchi the Rock'],['Nijika','Bocchi the Rock'],
+    ['Violet Evergarden','Violet Evergarden'],['Ai Hoshino','Oshi no Ko'],['Aqua Hoshino','Oshi no Ko'],['Ruby Hoshino','Oshi no Ko'],
   ],
   'Comedy & Wholesome': [
     // Spy x Family, Gintama, Mob Psycho 100, Saiki K, Grand Blue, Way of the Househusband,
     // Great Teacher Onizuka, Sakamoto, Umaru-chan, Nichijou
-    'Anya','Loid','Yor','Bond','Damian','Becky','Franky','Gintoki','Kagura','Shinpachi','Hijikata',
-    'Okita','Mob','Reigen','Ritsu','Dimple','Saiki','Nendo','Teruhashi','Kaido','Onizuka',
-    'Tatsu the Immortal','Sakamoto','Umaru','Nano','Iori Kitahara','Kohei Imamura',
+    ['Anya','Spy x Family'],['Loid','Spy x Family'],['Yor','Spy x Family'],['Bond','Spy x Family'],['Damian','Spy x Family'],['Becky','Spy x Family'],['Franky','Spy x Family'],['Gintoki','Gintama'],['Kagura','Gintama'],['Shinpachi','Gintama'],['Hijikata','Gintama'],
+    ['Okita','Gintama'],['Mob','Mob Psycho 100'],['Reigen','Mob Psycho 100'],['Ritsu','Mob Psycho 100'],['Dimple','Mob Psycho 100'],['Saiki','Saiki K'],['Nendo','Saiki K'],['Teruhashi','Saiki K'],['Kaido','Saiki K'],['Onizuka','Great Teacher Onizuka'],
+    ['Tatsu the Immortal','Way of the Househusband'],['Sakamoto','I\'m Sakamoto'],['Umaru','Umaru-chan'],['Nano','Nichijou'],['Iori Kitahara','Grand Blue'],['Kohei Imamura','Grand Blue'],
   ],
   'Mecha & Sci-Fi': [
     // Evangelion, Gundam, Code Geass, Steins;Gate, Ghost in the Shell, Cowboy Bebop,
     // Akira, Darling in the Franxx, Cyberpunk Edgerunners, Trigun, 86, Dr Stone
-    'Shinji','Rei Ayanami','Asuka','Misato','Gendo','Kaworu','Lelouch','C.C.','Suzaku','Kallen',
-    'Okabe','Kurisu','Mayuri','Daru','Amuro Ray','Char Aznable','Motoko Kusanagi','Batou',
-    'Spike Spiegel','Faye Valentine','Jet Black','Edward Wong','Ein','Kaneda','Tetsuo','Zero Two',
-    'Hiro','David Martinez','Lucy Kushinada','Rebecca','Vash the Stampede','Senku',
+    ['Shinji','Evangelion'],['Rei Ayanami','Evangelion'],['Asuka','Evangelion'],['Misato','Evangelion'],['Gendo','Evangelion'],['Kaworu','Evangelion'],['Lelouch','Code Geass'],['C.C.','Code Geass'],['Suzaku','Code Geass'],['Kallen','Code Geass'],
+    ['Okabe','Steins;Gate'],['Kurisu','Steins;Gate'],['Mayuri','Steins;Gate'],['Daru','Steins;Gate'],['Amuro Ray','Gundam'],['Char Aznable','Gundam'],['Motoko Kusanagi','Ghost in the Shell'],['Batou','Ghost in the Shell'],
+    ['Spike Spiegel','Cowboy Bebop'],['Faye Valentine','Cowboy Bebop'],['Jet Black','Cowboy Bebop'],['Edward Wong','Cowboy Bebop'],['Ein','Cowboy Bebop'],['Kaneda','Akira'],['Tetsuo','Akira'],['Zero Two','Darling in the Franxx'],
+    ['Hiro','Darling in the Franxx'],['David Martinez','Cyberpunk Edgerunners'],['Lucy Kushinada','Cyberpunk Edgerunners'],['Rebecca','Cyberpunk Edgerunners'],['Vash the Stampede','Trigun'],['Senku','Dr Stone'],
   ],
   'Ghibli & Anime Films': [
     // Spirited Away, Totoro, Howl's Moving Castle, Princess Mononoke, Kiki, Ponyo,
     // Your Name, Weathering With You, Suzume, A Silent Voice, The Boy and the Heron, Laputa
-    'Totoro','Catbus','Satsuki','Mei','Chihiro','Haku','No-Face','Yubaba','Boh','Howl','Sophie',
-    'Calcifer','Markl','San','Ashitaka','Kiki','Jiji','Ponyo','Sosuke','Taki','Mitsuha','Hodaka',
-    'Hina','Suzume','Souta','Shoya','Shoko','Mahito','The Grey Heron','Sheeta','Pazu',
+    ['Totoro','My Neighbour Totoro'],['Catbus','My Neighbour Totoro'],['Satsuki','My Neighbour Totoro'],['Mei','My Neighbour Totoro'],['Chihiro','Spirited Away'],['Haku','Spirited Away'],['No-Face','Spirited Away'],['Yubaba','Spirited Away'],['Boh','Spirited Away'],['Howl','Howl\'s Moving Castle'],['Sophie','Howl\'s Moving Castle'],
+    ['Calcifer','Howl\'s Moving Castle'],['Markl','Howl\'s Moving Castle'],['San','Princess Mononoke'],['Ashitaka','Princess Mononoke'],['Kiki','Kiki\'s Delivery Service'],['Jiji','Kiki\'s Delivery Service'],['Ponyo','Ponyo'],['Sosuke','Ponyo'],['Taki','Your Name'],['Mitsuha','Your Name'],['Hodaka','Weathering With You'],
+    ['Hina','Weathering With You'],['Suzume','Suzume'],['Souta','Suzume'],['Shoya','A Silent Voice'],['Shoko','A Silent Voice'],['Mahito','The Boy and the Heron'],['The Grey Heron','The Boy and the Heron'],['Sheeta','Castle in the Sky'],['Pazu','Castle in the Sky'],
   ],
   'Classics & Icons': [
     // Sailor Moon, Pokemon, Yu-Gi-Oh, Digimon, Inuyasha, Detective Conan, Lupin III,
     // Astro Boy, Doraemon, Ranma, Dragon Ball (original), Speed Racer, Captain Tsubasa
-    'Usagi','Tuxedo Mask','Sailor Mars','Luna','Pikachu','Ash','Misty','Brock','Charizard',
-    'Mewtwo','Jessie and James','Yugi','Seto Kaiba','Joey Wheeler','Blue-Eyes White Dragon',
-    'Agumon','Tai','Astro Boy','Doraemon','Nobita','Inuyasha','Kagome','Sesshomaru','Ranma',
-    'Detective Conan','Lupin','Zenigata','Kid Goku','Master Roshi','Speed Racer','Tsubasa',
+    ['Usagi','Sailor Moon'],['Tuxedo Mask','Sailor Moon'],['Sailor Mars','Sailor Moon'],['Luna','Sailor Moon'],['Pikachu','Pokemon'],['Ash','Pokemon'],['Misty','Pokemon'],['Brock','Pokemon'],['Charizard','Pokemon'],
+    ['Mewtwo','Pokemon'],['Jessie and James','Pokemon'],['Yugi','Yu-Gi-Oh'],['Seto Kaiba','Yu-Gi-Oh'],['Joey Wheeler','Yu-Gi-Oh'],['Blue-Eyes White Dragon','Yu-Gi-Oh'],
+    ['Agumon','Digimon'],['Tai','Digimon'],['Astro Boy','Astro Boy'],['Doraemon','Doraemon'],['Nobita','Doraemon'],['Inuyasha','Inuyasha'],['Kagome','Inuyasha'],['Sesshomaru','Inuyasha'],['Ranma','Ranma 1/2'],
+    ['Detective Conan','Detective Conan'],['Lupin','Lupin III'],['Zenigata','Lupin III'],['Kid Goku','Dragon Ball'],['Master Roshi','Dragon Ball'],['Speed Racer','Speed Racer'],['Tsubasa','Captain Tsubasa'],
   ],
 };
 const CATEGORIES = Object.keys(WORDS);
@@ -478,7 +478,7 @@ function startRound() {
   const settings = (game && game.settings) || mySettings;
   const nImp = players.length >= 6 ? settings.impostors : 1;
   const pool = [];
-  settings.categories.forEach(c => (WORDS[c] || []).forEach(w => pool.push({ w, c })));
+  settings.categories.forEach(c => (WORDS[c] || []).forEach(p => pool.push({ w: p[0], show: p[1], c })));
   const used = (game && game.usedWords) || [];
   let avail = pool.filter(p => !used.includes(p.w));
   if (!avail.length) avail = pool; // recycled every word, start over
@@ -491,6 +491,7 @@ function startRound() {
     order: shuffle(players.map(p => p.id)),
     impostorIds,
     word: pick.w,
+    show: pick.show,
     category: pick.c,
     settings,
     usedWords: used.concat([pick.w]).slice(-200),
@@ -574,8 +575,9 @@ function renderPlay() {
       ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
       : amImpostor
         ? { big: 'IMPOSTOR!', sub: game.settings.hint ? 'Category hint: ' + game.category : 'No hints. Blend in and survive.', cls: 'imp' }
-        : { big: game.word, sub: 'Category: ' + game.category, cls: 'crew' };
-    hideRole();
+        : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew' };
+    if (game.round !== roleRound) { roleRound = game.round; roleVisible = true; }
+    if (roleVisible) showRole(); else hideRole();
     $('order-list').innerHTML = game.order.map((id, i) => {
       const p = playerById(id);
       return '<div class="order-item' + (i === 0 ? ' first' : '') + '">' + p.emoji + ' ' + esc(p.name) + (id === myId ? ' (you)' : '') + '</div>';
@@ -606,7 +608,7 @@ function renderPlay() {
     if (r.caught) { banner.textContent = 'IMPOSTOR CAUGHT!'; banner.className = 'reveal-banner crew'; }
     else if (r.tie) { banner.textContent = 'TIE VOTE! IMPOSTOR ESCAPES'; banner.className = 'reveal-banner imp'; }
     else { banner.textContent = 'WRONG! IMPOSTOR WINS'; banner.className = 'reveal-banner imp'; }
-    $('reveal-word').innerHTML = 'The word was <span>' + esc(game.word) + '</span> (' + esc(game.category) + ')<br>Impostor' + (game.impostorIds.length > 1 ? 's' : '') + ': ' + impNames;
+    $('reveal-word').innerHTML = 'The word was <span>' + esc(game.word) + '</span> from ' + esc(game.show) + '<br>Impostor' + (game.impostorIds.length > 1 ? 's' : '') + ': ' + impNames;
     $('reveal-tally').innerHTML = game.players.map(p => {
       const n = r.tally[p.id] || 0;
       const votedFor = game.votes[p.id] ? playerById(game.votes[p.id]).name : '?';
@@ -624,8 +626,8 @@ function renderPlay() {
   }
 }
 
-/* role card hold-to-peek */
-let roleContent = null;
+/* role card: stays open (each player is on their own device), tap to hide/show */
+let roleContent = null, roleVisible = true, roleRound = 0;
 function showRole() {
   if (!roleContent) return;
   const c = $('role-card');
@@ -727,10 +729,11 @@ $('btn-guess').addEventListener('click', () => {
   channel.send({ type: 'broadcast', event: 'guess', payload: { playerId: myId, guess: g, round: game.round } });
 });
 
-/* hold-to-peek handlers (mouse + touch) */
-const rc = $('role-card');
-['mousedown', 'touchstart'].forEach(ev => rc.addEventListener(ev, e => { e.preventDefault(); showRole(); }));
-['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(ev => rc.addEventListener(ev, () => hideRole()));
+/* tap the card to hide or show it */
+$('role-card').addEventListener('click', () => {
+  roleVisible = !roleVisible;
+  if (roleVisible) showRole(); else hideRole();
+});
 
 /* deep link ?room=CODE */
 const params = new URLSearchParams(location.search);
