@@ -105,6 +105,7 @@ input[type=text]:focus{border-color:var(--purple)}
   border:2px solid rgba(255,255,255,.12);min-height:170px;display:flex;flex-direction:column;justify-content:center;gap:8px;
 }
 .role-card .peek-hint{color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.8rem}
+.role-card .char-img{width:110px;height:110px;object-fit:cover;border-radius:14px;margin:0 auto 2px;border:2px solid rgba(255,255,255,.25);box-shadow:0 4px 12px rgba(0,0,0,.4);background:var(--bg2)}
 .role-card .big{font-family:'Bangers',cursive;font-size:2.4rem;letter-spacing:2px;line-height:1.1}
 .role-card.revealed.crew{background:linear-gradient(140deg,#173a2c,#1f5c40);border-color:var(--green)}
 .role-card.revealed.imp{background:linear-gradient(140deg,#4a1024,#7a1533);border-color:var(--pink)}
@@ -236,6 +237,7 @@ input[type=text]:focus{border-color:var(--purple)}
     <div id="phase-playing" style="display:none">
       <div class="role-card" id="role-card">
         <div class="peek-hint" id="peek-hint">CARD HIDDEN. TAP TO SHOW</div>
+        <img class="char-img" id="role-img" alt="" style="display:none">
         <div class="big" id="role-big" style="display:none"></div>
         <div class="word-cat" id="role-sub" style="display:none"></div>
       </div>
@@ -260,6 +262,7 @@ input[type=text]:focus{border-color:var(--purple)}
     <div id="phase-reveal" style="display:none">
       <div class="card">
         <div class="reveal-banner" id="reveal-banner"></div>
+        <img class="char-img" id="reveal-img" alt="" style="display:none;width:96px;height:96px;object-fit:cover;border-radius:14px;margin:0 auto 8px;border:2px solid var(--gold);box-shadow:0 4px 12px rgba(0,0,0,.4)">
         <div class="reveal-word" id="reveal-word"></div>
         <div class="tally" id="reveal-tally"></div>
         <div class="guesses" id="reveal-guesses"></div>
@@ -282,6 +285,9 @@ input[type=text]:focus{border-color:var(--purple)}
 /* ============ CONFIG ============ */
 const SUPABASE_URL = 'https://smyoxapczplwlujjerug.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_GQbfzIzsAvnioMg_0MsgEQ__PdisPT9';
+
+/* Character image URLs, "word|show" -> image URL, injected at build time. */
+const CHAR_IMAGES = {};
 
 /* ============ WORD BANK ============ */
 /* Categories are anime genres. Each pulls the most popular characters from the
@@ -366,7 +372,7 @@ let sbClient = null, channel = null;
 let roomCode = '', myId = '', myName = '', myEmoji = '';
 let presencePlayers = [];      // [{id,name,emoji,joinedAt}]
 let game = null;               // latest broadcast game state (null = lobby, or {phase:'lobby',settings})
-let mySettings = { categories: CATEGORIES.slice(), hint: true, impostors: 1 };
+let mySettings = { categories: ['Shonen Battle'], hint: true, impostors: 1 };
 let subscribed = false;
 let rebroadcastTimer = null;
 
@@ -474,9 +480,10 @@ function sendState(g) {
 /* ============ GAME LOGIC (host actions) ============ */
 function startRound() {
   const players = presencePlayers.slice().sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
-  if (players.length < 2) { toast('You need at least 2 players (3+ is best)'); return; }
+  if (players.length < 1) { toast('Waiting for players to join...'); return; }
   const settings = (game && game.settings) || mySettings;
-  const nImp = players.length >= 6 ? settings.impostors : 1;
+  // Solo (test mode): no impostor, so you can see the crew word card + image.
+  const nImp = players.length < 2 ? 0 : (players.length >= 6 ? settings.impostors : 1);
   const pool = [];
   settings.categories.forEach(c => (WORDS[c] || []).forEach(p => pool.push({ w: p[0], show: p[1], c })));
   const used = (game && game.usedWords) || [];
@@ -575,7 +582,7 @@ function renderPlay() {
       ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
       : amImpostor
         ? { big: 'IMPOSTOR!', sub: game.settings.hint ? 'Category hint: ' + game.category : 'No hints. Blend in and survive.', cls: 'imp' }
-        : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew' };
+        : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew', img: CHAR_IMAGES[game.word + '|' + game.show] };
     if (game.round !== roleRound) { roleRound = game.round; roleVisible = true; }
     if (roleVisible) showRole(); else hideRole();
     $('order-list').innerHTML = game.order.map((id, i) => {
@@ -608,6 +615,8 @@ function renderPlay() {
     if (r.caught) { banner.textContent = 'IMPOSTOR CAUGHT!'; banner.className = 'reveal-banner crew'; }
     else if (r.tie) { banner.textContent = 'TIE VOTE! IMPOSTOR ESCAPES'; banner.className = 'reveal-banner imp'; }
     else { banner.textContent = 'WRONG! IMPOSTOR WINS'; banner.className = 'reveal-banner imp'; }
+    const revImg = $('reveal-img'), revUrl = CHAR_IMAGES[game.word + '|' + game.show];
+    if (revUrl) { revImg.src = revUrl; revImg.style.display = 'block'; } else { revImg.removeAttribute('src'); revImg.style.display = 'none'; }
     $('reveal-word').innerHTML = 'The word was <span>' + esc(game.word) + '</span> from ' + esc(game.show) + '<br>Impostor' + (game.impostorIds.length > 1 ? 's' : '') + ': ' + impNames;
     $('reveal-tally').innerHTML = game.players.map(p => {
       const n = r.tally[p.id] || 0;
@@ -634,6 +643,9 @@ function showRole() {
   c.classList.add('revealed', roleContent.cls);
   c.classList.remove(roleContent.cls === 'imp' ? 'crew' : 'imp');
   $('peek-hint').style.display = 'none';
+  const img = $('role-img');
+  if (roleContent.img) { img.src = roleContent.img; img.style.display = 'block'; }
+  else { img.removeAttribute('src'); img.style.display = 'none'; }
   $('role-big').style.display = 'block'; $('role-big').textContent = roleContent.big;
   $('role-sub').style.display = 'block'; $('role-sub').textContent = roleContent.sub;
 }
@@ -641,6 +653,7 @@ function hideRole() {
   const c = $('role-card');
   c.classList.remove('revealed', 'imp', 'crew');
   $('peek-hint').style.display = 'block';
+  $('role-img').style.display = 'none';
   $('role-big').style.display = 'none';
   $('role-sub').style.display = 'none';
 }
@@ -670,7 +683,7 @@ function grabName() {
 const catsEl = $('cats');
 CATEGORIES.forEach(c => {
   const d = document.createElement('div');
-  d.className = 'cat on'; d.textContent = c; d.dataset.cat = c;
+  d.className = 'cat' + (mySettings.categories.includes(c) ? ' on' : ''); d.textContent = c; d.dataset.cat = c;
   d.addEventListener('click', () => { d.classList.toggle('on'); syncCats(); });
   catsEl.appendChild(d);
 });
