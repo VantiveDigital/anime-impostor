@@ -1140,7 +1140,7 @@ function renderPlay() {
     roleContent = !inRound
       ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
       : amImpostor
-        ? { big: 'IMPOSTOR!', sub: game.settings.hint ? 'Clue: ' + (CHAR_HINTS[game.word + '|' + game.show] || game.category) : 'No clue. Blend in and survive.', cls: 'imp' }
+        ? { big: 'IMPOSTOR!', sub: (game.settings.hint && CHAR_HINTS[game.word + '|' + game.show]) ? 'Clue: ' + CHAR_HINTS[game.word + '|' + game.show] : 'No clue. Blend in and survive.', cls: 'imp' }
         : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew', img: CHAR_IMAGES[game.word + '|' + game.show] };
     if (game.round !== roleRound) { roleRound = game.round; roleVisible = true; }
     if (roleVisible) showRole(); else hideRole();
