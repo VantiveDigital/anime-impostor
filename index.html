@@ -192,18 +192,18 @@ input[type=text]:focus{border-color:var(--purple)}
     <div class="card">
       <div class="section-title">RULES</div>
       <div class="toggle-row">
-        <div>
-          <div class="t-label">Give the impostor a clue</div>
-          <div class="t-sub">A vague hint about the character, enough to bluff</div>
+        <div style="flex:1">
+          <div class="t-label">Impostor clue</div>
+          <div class="t-sub">Off = hardest. Vague = one word. Clear = a bit more to go on.</div>
         </div>
-        <label class="switch"><input type="checkbox" id="opt-hint" checked><span class="slider"></span></label>
+        <div class="seg" id="seg-clue" style="width:190px"><button data-clue="off">Off</button><button data-clue="vague" class="on">Vague</button><button data-clue="clear">Clear</button></div>
       </div>
       <div class="toggle-row">
         <div style="flex:1">
           <div class="t-label">Impostors</div>
           <div class="t-sub">Two impostors needs 6+ players</div>
         </div>
-        <div class="seg" style="width:120px"><button data-n="1" class="on">1</button><button data-n="2">2</button></div>
+        <div class="seg" id="seg-imp" style="width:120px"><button data-n="1" class="on">1</button><button data-n="2">2</button></div>
       </div>
     </div>
     <button class="btn gold" id="btn-create">OPEN THE LOBBY</button>
@@ -676,372 +676,1470 @@ const CHAR_IMAGES = {
 
 /* Impostor clues, "word|show" -> vague hint about the character, injected at build time. */
 const CHAR_HINTS = {
- "Naruto|Naruto": "Determined",
- "Sasuke|Naruto": "Brooding",
- "Kakashi|Naruto": "Laid-back",
- "Itachi|Naruto": "Mysterious",
- "Gaara|Naruto": "Stoic",
- "Luffy|One Piece": "Carefree",
- "Zoro|One Piece": "Swordsman",
- "Sanji|One Piece": "Flirtatious",
- "Shanks|One Piece": "Mentor",
- "Nami|One Piece": "Cunning",
- "Goku|Dragon Ball Z": "Cheerful",
- "Vegeta|Dragon Ball Z": "Prideful",
- "Frieza|Dragon Ball Z": "Tyrant",
- "Gohan|Dragon Ball Z": "Gifted",
- "Piccolo|Dragon Ball Z": "Mentor",
- "Ichigo|Bleach": "Protective",
- "Rukia|Bleach": "Stoic",
- "Aizen|Bleach": "Mastermind",
- "Byakuya|Bleach": "Noble",
- "Kenpachi|Bleach": "Savage",
- "Deku|My Hero Academia": "Earnest",
- "Bakugo|My Hero Academia": "Aggressive",
- "All Might|My Hero Academia": "Muscular",
- "Todoroki|My Hero Academia": "Reserved",
- "Shigaraki|My Hero Academia": "Vengeful",
- "Gojo|Jujutsu Kaisen": "Cocky",
- "Sukuna|Jujutsu Kaisen": "Menacing",
- "Yuji|Jujutsu Kaisen": "Kind-hearted",
- "Megumi|Jujutsu Kaisen": "Stoic",
- "Nobara|Jujutsu Kaisen": "Feisty",
- "Tanjiro|Demon Slayer": "Kind",
- "Nezuko|Demon Slayer": "Protective",
- "Rengoku|Demon Slayer": "Passionate",
- "Zenitsu|Demon Slayer": "Cowardly",
- "Inosuke|Demon Slayer": "Wild",
- "Gon|Hunter x Hunter": "Innocent",
- "Killua|Hunter x Hunter": "Cool",
- "Hisoka|Hunter x Hunter": "Creepy",
- "Kurapika|Hunter x Hunter": "Focused",
- "Leorio|Hunter x Hunter": "Brash",
- "Denji|Chainsaw Man": "Reckless",
- "Makima|Chainsaw Man": "Manipulative",
- "Power|Chainsaw Man": "Boastful",
- "Aki|Chainsaw Man": "Serious",
- "Kobeni|Chainsaw Man": "Nervous",
- "Jotaro|JoJo's Bizarre Adventure": "Stoic",
- "Dio|JoJo's Bizarre Adventure": "Villainous",
- "Joseph|JoJo's Bizarre Adventure": "Cunning",
- "Giorno|JoJo's Bizarre Adventure": "Ambitious",
- "Josuke|JoJo's Bizarre Adventure": "Hot-headed",
- "Saitama|One Punch Man": "Indifferent",
- "Genos|One Punch Man": "Cyborg",
- "Garou|One Punch Man": "Rebellious",
- "Tatsumaki|One Punch Man": "Irritable",
- "Edward Elric|Fullmetal Alchemist": "Alchemist",
- "Alphonse|Fullmetal Alchemist": "Gentle",
- "Roy Mustang|Fullmetal Alchemist": "Ambitious",
- "Scar|Fullmetal Alchemist": "Vengeful",
- "Asta|Black Clover": "Loud",
- "Yuno|Black Clover": "Gifted",
- "Noelle|Black Clover": "Prideful",
- "Yami|Black Clover": "Bold",
- "Natsu|Fairy Tail": "Hot-blooded",
- "Gray|Fairy Tail": "Cool",
- "Erza|Fairy Tail": "Fearsome",
- "Lucy Heartfilia|Fairy Tail": "Cheerful",
- "Yusuke Urameshi|Yu Yu Hakusho": "Delinquent",
- "Hiei|Yu Yu Hakusho": "Cold",
- "Kurama|Yu Yu Hakusho": "Cunning",
- "Kuwabara|Yu Yu Hakusho": "Loyal",
- "Meliodas|Seven Deadly Sins": "Deceptive",
- "Ban|Seven Deadly Sins": "Reckless",
- "King|Seven Deadly Sins": "Laid-back",
- "Escanor|Seven Deadly Sins": "Prideful",
- "Shinra|Fire Force": "Heroic",
- "Benimaru|Fire Force": "Fierce",
- "Tamaki|Fire Force": "Unlucky",
- "Arthur|Fire Force": "Delusional",
- "Takemichi|Tokyo Revengers": "Timid",
- "Mikey|Tokyo Revengers": "Charismatic",
- "Draken|Tokyo Revengers": "Loyal",
- "Baji|Tokyo Revengers": "Reckless",
- "Atsushi|Bungo Stray Dogs": "Timid",
- "Dazai|Bungo Stray Dogs": "Eccentric",
- "Akutagawa|Bungo Stray Dogs": "Ruthless",
- "Chuuya|Bungo Stray Dogs": "Hot-headed",
- "Rin Okumura|Blue Exorcist": "Hot-headed",
- "Yukio|Blue Exorcist": "Composed",
- "Shiemi|Blue Exorcist": "Gentle",
- "Suguro|Blue Exorcist": "Determined",
- "Maka|Soul Eater": "Diligent",
- "Soul|Soul Eater": "Laid-back",
- "Death the Kid|Soul Eater": "Meticulous",
- "Black Star|Soul Eater": "Boastful",
- "Yugi|Yu-Gi-Oh": "Brave",
- "Seto Kaiba|Yu-Gi-Oh": "Arrogant",
- "Joey Wheeler|Yu-Gi-Oh": "Hot-headed",
- "Yami Yugi|Yu-Gi-Oh": "Commanding",
- "Yoh|Shaman King": "Laid-back",
- "Anna|Shaman King": "Stern",
- "Amidamaru|Shaman King": "Loyal",
- "Hao|Shaman King": "Arrogant",
- "Kafka Hibino|Kaiju No. 8": "Determined",
- "Kikoru|Kaiju No. 8": "Elite",
- "Reno|Kaiju No. 8": "Eager",
- "Mash Burnedead|Mashle": "Stoic",
- "Lance|Mashle": "Serious",
- "Finn|Mashle": "Timid",
- "Momo|Dandadan": "Brave",
- "Okarun|Dandadan": "Awkward",
- "Turbo Granny|Dandadan": "Mischievous",
- "Kenshin|Rurouni Kenshin": "Humble",
- "Saito|Rurouni Kenshin": "Stern",
- "Sanosuke|Rurouni Kenshin": "Brash",
- "Yato|Noragami": "Carefree",
- "Yukine|Noragami": "Moody",
- "Hiyori|Noragami": "Kind",
- "Baki Hanma|Baki": "Determined",
- "Yujiro Hanma|Baki": "Brutal",
- "Doppo|Baki": "Tough",
- "Akame|Akame ga Kill": "Stoic",
- "Tatsumi|Akame ga Kill": "Earnest",
- "Esdeath|Akame ga Kill": "Sadistic",
- "Aladdin|Magi": "Cheerful",
- "Alibaba|Magi": "Brave",
- "Morgiana|Magi": "Loyal",
- "Jin Mori|The God of High School": "Cocky",
- "Han Daewi|The God of High School": "Loyal",
- "Yoo Mira|The God of High School": "Fierce",
- "Light Yagami|Death Note": "Calculating",
- "L|Death Note": "Eccentric",
- "Ryuk|Death Note": "Mischievous",
- "Misa|Death Note": "Devoted",
- "Near|Death Note": "Analytical",
- "Eren|Attack on Titan": "Rebellious",
- "Mikasa|Attack on Titan": "Loyal",
- "Levi|Attack on Titan": "Skilled",
- "Armin|Attack on Titan": "Clever",
- "Erwin|Attack on Titan": "Commander",
- "Annie|Attack on Titan": "Cold",
- "Reiner|Attack on Titan": "Conflicted",
- "Kaneki|Tokyo Ghoul": "Tormented",
- "Touka|Tokyo Ghoul": "Fierce",
- "Juuzou|Tokyo Ghoul": "Unhinged",
- "Guts|Berserk": "Swordsman",
- "Griffith|Berserk": "Ambitious",
- "Casca|Berserk": "Warrior",
- "Johan Liebert|Monster": "Sinister",
- "Dr Tenma|Monster": "Compassionate",
- "Thorfinn|Vinland Saga": "Vengeful",
- "Askeladd|Vinland Saga": "Cunning",
- "Canute|Vinland Saga": "Timid",
- "Migi|Parasyte": "Parasite",
- "Shinichi Izumi|Parasyte": "Conflicted",
- "Akane Tsunemori|Psycho-Pass": "Dutiful",
- "Makishima|Psycho-Pass": "Sinister",
- "Yuno Gasai|Future Diary": "Obsessive",
- "Alucard|Hellsing": "Vampire",
- "Lucy|Elfen Lied": "Tormented",
- "Satoru Fujinuma|Erased": "Observant",
- "Gabimaru|Hell's Paradise": "Stoic",
- "Kirito|Sword Art Online": "Swordsman",
- "Asuna|Sword Art Online": "Skilled",
- "Subaru|Re:Zero": "Persistent",
- "Rem|Re:Zero": "Devoted",
- "Ram|Re:Zero": "Sharp-tongued",
- "Emilia|Re:Zero": "Kind",
- "Ainz|Overlord": "Overlord",
- "Albedo|Overlord": "Devoted",
- "Kazuma|Konosuba": "Sarcastic",
- "Aqua|Konosuba": "Useless",
- "Megumin|Konosuba": "Obsessive",
- "Darkness|Konosuba": "Eccentric",
- "Rimuru|Reincarnated as a Slime": "Wise",
- "Milim|Reincarnated as a Slime": "Playful",
- "Rudeus|Mushoku Tensei": "Talented",
- "Roxy|Mushoku Tensei": "Mage",
- "Eris|Mushoku Tensei": "Feisty",
- "Naofumi|Shield Hero": "Bitter",
- "Raphtalia|Shield Hero": "Loyal",
- "Frieren|Frieren": "Ancient",
- "Fern|Frieren": "Composed",
- "Himmel|Frieren": "Heroic",
- "Stark|Frieren": "Nervous",
- "Sora|No Game No Life": "Genius",
- "Shiro|No Game No Life": "Genius",
- "Sung Jinwoo|Solo Leveling": "Ambitious",
- "Cha Hae-In|Solo Leveling": "Elite",
- "Bell Cranel|DanMachi": "Eager",
- "Hestia|DanMachi": "Cheerful",
- "Cid Kagenou|The Eminence in Shadow": "Theatrical",
- "Hinata|Haikyuu": "Energetic",
- "Kageyama|Haikyuu": "Talented",
- "Oikawa|Haikyuu": "Charismatic",
- "Nishinoya|Haikyuu": "Energetic",
- "Tsukishima|Haikyuu": "Sarcastic",
- "Bokuto|Haikyuu": "Boisterous",
- "Isagi|Blue Lock": "Sharp",
- "Bachira|Blue Lock": "Playful",
- "Rin Itoshi|Blue Lock": "Cold",
- "Barou|Blue Lock": "Arrogant",
- "Nagi|Blue Lock": "Lazy",
- "Reo|Blue Lock": "Wealthy",
- "Kuroko|Kuroko's Basketball": "Unnoticed",
- "Kagami|Kuroko's Basketball": "Fiery",
- "Aomine|Kuroko's Basketball": "Gifted",
- "Kise|Kuroko's Basketball": "Flashy",
- "Midorima|Kuroko's Basketball": "Precise",
- "Akashi|Kuroko's Basketball": "Commanding",
- "Sakuragi|Slam Dunk": "Hot-headed",
- "Rukawa|Slam Dunk": "Aloof",
- "Ippo|Hajime no Ippo": "Timid",
- "Takamura|Hajime no Ippo": "Brash",
- "Haruka Nanase|Free!": "Reserved",
- "Rin Matsuoka|Free!": "Competitive",
- "Yuri Katsuki|Yuri on Ice": "Anxious",
- "Victor Nikiforov|Yuri on Ice": "Flamboyant",
- "Takumi Fujiwara|Initial D": "Quiet",
- "Soma Yukihira|Food Wars": "Confident",
- "Erina|Food Wars": "Haughty",
- "Sena Kobayakawa|Eyeshield 21": "Timid",
- "Kaguya|Kaguya-sama": "Prideful",
- "Miyuki Shirogane|Kaguya-sama": "Diligent",
- "Chika|Kaguya-sama": "Bubbly",
- "Ishigami|Kaguya-sama": "Gloomy",
- "Taiga|Toradora": "Fiery",
- "Ryuuji|Toradora": "Gentle",
- "Hori|Horimiya": "Popular",
- "Miyamura|Horimiya": "Quiet",
- "Tohru Honda|Fruits Basket": "Selfless",
- "Kyo Sohma|Fruits Basket": "Hot-headed",
- "Yuki Sohma|Fruits Basket": "Princely",
- "Nagisa|Clannad": "Gentle",
- "Tomoya|Clannad": "Cynical",
- "Kousei|Your Lie in April": "Pianist",
- "Kaori|Your Lie in April": "Free-spirited",
- "Chizuru|Rent-a-Girlfriend": "Ambitious",
- "Marin Kitagawa|My Dress-Up Darling": "Bubbly",
- "Wakana Gojo|My Dress-Up Darling": "Shy",
- "Komi|Komi Can't Communicate": "Shy",
- "Tadano|Komi Can't Communicate": "Ordinary",
- "Yui Hirasawa|K-On": "Carefree",
- "Mio Akiyama|K-On": "Shy",
- "Bocchi|Bocchi the Rock": "Anxious",
- "Nijika|Bocchi the Rock": "Cheerful",
- "Violet Evergarden|Violet Evergarden": "Stoic",
- "Ai Hoshino|Oshi no Ko": "Radiant",
- "Aqua Hoshino|Oshi no Ko": "Cynical",
- "Ruby Hoshino|Oshi no Ko": "Bubbly",
- "Anya|Spy x Family": "Playful",
- "Loid|Spy x Family": "Composed",
- "Yor|Spy x Family": "Gentle",
- "Bond|Spy x Family": "Loyal",
- "Damian|Spy x Family": "Prideful",
- "Becky|Spy x Family": "Loyal",
- "Franky|Spy x Family": "Nervous",
- "Gintoki|Gintama": "Lazy",
- "Kagura|Gintama": "Gluttonous",
- "Shinpachi|Gintama": "Ordinary",
- "Hijikata|Gintama": "Strict",
- "Okita|Gintama": "Sadistic",
- "Mob|Mob Psycho 100": "Reserved",
- "Reigen|Mob Psycho 100": "Charismatic",
- "Ritsu|Mob Psycho 100": "Composed",
- "Dimple|Mob Psycho 100": "Mischievous",
- "Saiki|Saiki K": "Aloof",
- "Nendo|Saiki K": "Dim-witted",
- "Teruhashi|Saiki K": "Adored",
- "Kaido|Saiki K": "Delusional",
- "Onizuka|Great Teacher Onizuka": "Wild",
- "Tatsu the Immortal|Way of the Househusband": "Intimidating",
- "Sakamoto|I'm Sakamoto": "Flawless",
- "Umaru|Umaru-chan": "Two-faced",
- "Nano|Nichijou": "Earnest",
- "Iori Kitahara|Grand Blue": "Overwhelmed",
- "Kohei Imamura|Grand Blue": "Dramatic",
- "Shinji|Evangelion": "Timid",
- "Rei Ayanami|Evangelion": "Mysterious",
- "Asuka|Evangelion": "Fiery",
- "Misato|Evangelion": "Carefree",
- "Gendo|Evangelion": "Cold",
- "Kaworu|Evangelion": "Enigmatic",
- "Lelouch|Code Geass": "Strategic",
- "C.C.|Code Geass": "Mysterious",
- "Suzaku|Code Geass": "Loyal",
- "Kallen|Code Geass": "Fierce",
- "Okabe|Steins;Gate": "Eccentric",
- "Kurisu|Steins;Gate": "Brilliant",
- "Mayuri|Steins;Gate": "Sweet",
- "Daru|Steins;Gate": "Hacker",
- "Amuro Ray|Gundam": "Reluctant",
- "Char Aznable|Gundam": "Masked",
- "Motoko Kusanagi|Ghost in the Shell": "Cyborg",
- "Batou|Ghost in the Shell": "Tough",
- "Spike Spiegel|Cowboy Bebop": "Laid-back",
- "Faye Valentine|Cowboy Bebop": "Sly",
- "Jet Black|Cowboy Bebop": "Gruff",
- "Edward Wong|Cowboy Bebop": "Quirky",
- "Ein|Cowboy Bebop": "Clever",
- "Kaneda|Akira": "Rebellious",
- "Tetsuo|Akira": "Unstable",
- "Zero Two|Darling in the Franxx": "Flirtatious",
- "Hiro|Darling in the Franxx": "Earnest",
- "David Martinez|Cyberpunk Edgerunners": "Ambitious",
- "Lucy Kushinada|Cyberpunk Edgerunners": "Reserved",
- "Rebecca|Cyberpunk Edgerunners": "Wild",
- "Vash the Stampede|Trigun": "Goofy",
- "Senku|Dr Stone": "Genius",
- "Totoro|My Neighbour Totoro": "Spirit",
- "Catbus|My Neighbour Totoro": "Whimsical",
- "Satsuki|My Neighbour Totoro": "Caring",
- "Mei|My Neighbour Totoro": "Curious",
- "Chihiro|Spirited Away": "Brave",
- "Haku|Spirited Away": "Mysterious",
- "No-Face|Spirited Away": "Lonely",
- "Yubaba|Spirited Away": "Greedy",
- "Boh|Spirited Away": "Spoiled",
- "Howl|Howl's Moving Castle": "Vain",
- "Sophie|Howl's Moving Castle": "Determined",
- "Calcifer|Howl's Moving Castle": "Sassy",
- "Markl|Howl's Moving Castle": "Apprentice",
- "San|Princess Mononoke": "Wild",
- "Ashitaka|Princess Mononoke": "Noble",
- "Kiki|Kiki's Delivery Service": "Cheerful",
- "Jiji|Kiki's Delivery Service": "Sarcastic",
- "Ponyo|Ponyo": "Playful",
- "Sosuke|Ponyo": "Innocent",
- "Taki|Your Name": "Earnest",
- "Mitsuha|Your Name": "Yearning",
- "Hodaka|Weathering With You": "Runaway",
- "Hina|Weathering With You": "Selfless",
- "Suzume|Suzume": "Brave",
- "Souta|Suzume": "Cursed",
- "Shoya|A Silent Voice": "Remorseful",
- "Shoko|A Silent Voice": "Gentle",
- "Mahito|The Boy and the Heron": "Grieving",
- "The Grey Heron|The Boy and the Heron": "Deceptive",
- "Sheeta|Castle in the Sky": "Gentle",
- "Pazu|Castle in the Sky": "Brave",
- "Usagi|Sailor Moon": "Clumsy",
- "Tuxedo Mask|Sailor Moon": "Masked",
- "Sailor Mars|Sailor Moon": "Fiery",
- "Luna|Sailor Moon": "Wise",
- "Pikachu|Pokemon": "Electric",
- "Ash|Pokemon": "Determined",
- "Misty|Pokemon": "Fiery",
- "Brock|Pokemon": "Nurturing",
- "Charizard|Pokemon": "Fierce",
- "Mewtwo|Pokemon": "Powerful",
- "Jessie and James|Pokemon": "Bumbling",
- "Agumon|Digimon": "Loyal",
- "Tai|Digimon": "Brave",
- "Astro Boy|Astro Boy": "Innocent",
- "Doraemon|Doraemon": "Helpful",
- "Nobita|Doraemon": "Lazy",
- "Inuyasha|Inuyasha": "Hot-headed",
- "Kagome|Inuyasha": "Kind",
- "Sesshomaru|Inuyasha": "Cold",
- "Ranma|Ranma 1/2": "Hot-headed",
- "Detective Conan|Detective Conan": "Clever",
- "Lupin|Lupin III": "Charming",
- "Zenigata|Lupin III": "Persistent",
- "Kid Goku|Dragon Ball": "Naive",
- "Master Roshi|Dragon Ball": "Perverted",
- "Speed Racer|Speed Racer": "Daring",
- "Tsubasa|Captain Tsubasa": "Passionate"
+ "Naruto|Naruto": {
+  "v": "Determined",
+  "c": "Determined ninja"
+ },
+ "Sasuke|Naruto": {
+  "v": "Brooding",
+  "c": "Brooding ninja"
+ },
+ "Kakashi|Naruto": {
+  "v": "Laid-back",
+  "c": "Masked ninja"
+ },
+ "Itachi|Naruto": {
+  "v": "Mysterious",
+  "c": "Mysterious ninja"
+ },
+ "Gaara|Naruto": {
+  "v": "Stoic",
+  "c": "Stoic ninja"
+ },
+ "Luffy|One Piece": {
+  "v": "Carefree",
+  "c": "Carefree pirate"
+ },
+ "Zoro|One Piece": {
+  "v": "Swordsman",
+  "c": "Loyal swordsman"
+ },
+ "Sanji|One Piece": {
+  "v": "Flirtatious",
+  "c": "Pirate cook"
+ },
+ "Shanks|One Piece": {
+  "v": "Mentor",
+  "c": "Legendary pirate"
+ },
+ "Nami|One Piece": {
+  "v": "Cunning",
+  "c": "Pirate navigator"
+ },
+ "Goku|Dragon Ball Z": {
+  "v": "Cheerful",
+  "c": "Cheerful Saiyan"
+ },
+ "Vegeta|Dragon Ball Z": {
+  "v": "Prideful",
+  "c": "Prideful Saiyan"
+ },
+ "Frieza|Dragon Ball Z": {
+  "v": "Tyrant",
+  "c": "Alien tyrant"
+ },
+ "Gohan|Dragon Ball Z": {
+  "v": "Gifted",
+  "c": "Gifted Saiyan"
+ },
+ "Piccolo|Dragon Ball Z": {
+  "v": "Mentor",
+  "c": "Stern mentor"
+ },
+ "Ichigo|Bleach": {
+  "v": "Protective",
+  "c": "Teen soul reaper"
+ },
+ "Rukia|Bleach": {
+  "v": "Stoic",
+  "c": "Petite soul reaper"
+ },
+ "Aizen|Bleach": {
+  "v": "Mastermind",
+  "c": "Scheming captain"
+ },
+ "Byakuya|Bleach": {
+  "v": "Noble",
+  "c": "Noble captain"
+ },
+ "Kenpachi|Bleach": {
+  "v": "Savage",
+  "c": "Savage swordsman"
+ },
+ "Deku|My Hero Academia": {
+  "v": "Earnest",
+  "c": "Aspiring hero"
+ },
+ "Bakugo|My Hero Academia": {
+  "v": "Aggressive",
+  "c": "Explosive hero"
+ },
+ "All Might|My Hero Academia": {
+  "v": "Muscular",
+  "c": "Muscular hero"
+ },
+ "Todoroki|My Hero Academia": {
+  "v": "Reserved",
+  "c": "Cool hero"
+ },
+ "Shigaraki|My Hero Academia": {
+  "v": "Vengeful",
+  "c": "Villain leader"
+ },
+ "Gojo|Jujutsu Kaisen": {
+  "v": "Cocky",
+  "c": "Cocky sorcerer"
+ },
+ "Sukuna|Jujutsu Kaisen": {
+  "v": "Menacing",
+  "c": "Ancient curse"
+ },
+ "Yuji|Jujutsu Kaisen": {
+  "v": "Kind-hearted",
+  "c": "Kind sorcerer"
+ },
+ "Megumi|Jujutsu Kaisen": {
+  "v": "Stoic",
+  "c": "Serious sorcerer"
+ },
+ "Nobara|Jujutsu Kaisen": {
+  "v": "Feisty",
+  "c": "Feisty sorcerer"
+ },
+ "Tanjiro|Demon Slayer": {
+  "v": "Kind",
+  "c": "Kind demon slayer"
+ },
+ "Nezuko|Demon Slayer": {
+  "v": "Protective",
+  "c": "Demon sister"
+ },
+ "Rengoku|Demon Slayer": {
+  "v": "Passionate",
+  "c": "Fiery swordsman"
+ },
+ "Zenitsu|Demon Slayer": {
+  "v": "Cowardly",
+  "c": "Cowardly slayer"
+ },
+ "Inosuke|Demon Slayer": {
+  "v": "Wild",
+  "c": "Wild slayer"
+ },
+ "Gon|Hunter x Hunter": {
+  "v": "Innocent",
+  "c": "Rookie hunter"
+ },
+ "Killua|Hunter x Hunter": {
+  "v": "Cool",
+  "c": "Ex-assassin hunter"
+ },
+ "Hisoka|Hunter x Hunter": {
+  "v": "Creepy",
+  "c": "Creepy fighter"
+ },
+ "Kurapika|Hunter x Hunter": {
+  "v": "Focused",
+  "c": "Vengeful hunter"
+ },
+ "Leorio|Hunter x Hunter": {
+  "v": "Brash",
+  "c": "Brash hunter"
+ },
+ "Denji|Chainsaw Man": {
+  "v": "Reckless",
+  "c": "Reckless devil hunter"
+ },
+ "Makima|Chainsaw Man": {
+  "v": "Manipulative",
+  "c": "Manipulative boss"
+ },
+ "Power|Chainsaw Man": {
+  "v": "Boastful",
+  "c": "Boastful fiend"
+ },
+ "Aki|Chainsaw Man": {
+  "v": "Serious",
+  "c": "Serious devil hunter"
+ },
+ "Kobeni|Chainsaw Man": {
+  "v": "Nervous",
+  "c": "Nervous rookie"
+ },
+ "Jotaro|JoJo's Bizarre Adventure": {
+  "v": "Stoic",
+  "c": "Stoic delinquent"
+ },
+ "Dio|JoJo's Bizarre Adventure": {
+  "v": "Villainous",
+  "c": "Vampire villain"
+ },
+ "Joseph|JoJo's Bizarre Adventure": {
+  "v": "Cunning",
+  "c": "Cunning fighter"
+ },
+ "Giorno|JoJo's Bizarre Adventure": {
+  "v": "Ambitious",
+  "c": "Ambitious gangster"
+ },
+ "Josuke|JoJo's Bizarre Adventure": {
+  "v": "Hot-headed",
+  "c": "Hot-headed teen"
+ },
+ "Saitama|One Punch Man": {
+  "v": "Indifferent",
+  "c": "Unbeatable hero"
+ },
+ "Genos|One Punch Man": {
+  "v": "Cyborg",
+  "c": "Cyborg hero"
+ },
+ "Garou|One Punch Man": {
+  "v": "Rebellious",
+  "c": "Rebellious fighter"
+ },
+ "Tatsumaki|One Punch Man": {
+  "v": "Irritable",
+  "c": "Psychic hero"
+ },
+ "Edward Elric|Fullmetal Alchemist": {
+  "v": "Alchemist",
+  "c": "Short alchemist"
+ },
+ "Alphonse|Fullmetal Alchemist": {
+  "v": "Gentle",
+  "c": "Gentle alchemist"
+ },
+ "Roy Mustang|Fullmetal Alchemist": {
+  "v": "Ambitious",
+  "c": "Ambitious officer"
+ },
+ "Scar|Fullmetal Alchemist": {
+  "v": "Vengeful",
+  "c": "Vengeful killer"
+ },
+ "Asta|Black Clover": {
+  "v": "Loud",
+  "c": "Loud mage"
+ },
+ "Yuno|Black Clover": {
+  "v": "Gifted",
+  "c": "Gifted mage"
+ },
+ "Noelle|Black Clover": {
+  "v": "Prideful",
+  "c": "Prideful mage"
+ },
+ "Yami|Black Clover": {
+  "v": "Bold",
+  "c": "Bold captain"
+ },
+ "Natsu|Fairy Tail": {
+  "v": "Hot-blooded",
+  "c": "Fire wizard"
+ },
+ "Gray|Fairy Tail": {
+  "v": "Cool",
+  "c": "Ice wizard"
+ },
+ "Erza|Fairy Tail": {
+  "v": "Fearsome",
+  "c": "Fearsome knight"
+ },
+ "Lucy Heartfilia|Fairy Tail": {
+  "v": "Cheerful",
+  "c": "Cheerful wizard"
+ },
+ "Yusuke Urameshi|Yu Yu Hakusho": {
+  "v": "Delinquent",
+  "c": "Delinquent detective"
+ },
+ "Hiei|Yu Yu Hakusho": {
+  "v": "Cold",
+  "c": "Cold demon"
+ },
+ "Kurama|Yu Yu Hakusho": {
+  "v": "Cunning",
+  "c": "Cunning demon"
+ },
+ "Kuwabara|Yu Yu Hakusho": {
+  "v": "Loyal",
+  "c": "Loyal brawler"
+ },
+ "Meliodas|Seven Deadly Sins": {
+  "v": "Deceptive",
+  "c": "Deceptive captain"
+ },
+ "Ban|Seven Deadly Sins": {
+  "v": "Reckless",
+  "c": "Reckless sin"
+ },
+ "King|Seven Deadly Sins": {
+  "v": "Laid-back",
+  "c": "Laid-back fairy"
+ },
+ "Escanor|Seven Deadly Sins": {
+  "v": "Prideful",
+  "c": "Prideful sin"
+ },
+ "Shinra|Fire Force": {
+  "v": "Heroic",
+  "c": "Fire soldier"
+ },
+ "Benimaru|Fire Force": {
+  "v": "Fierce",
+  "c": "Fierce fire soldier"
+ },
+ "Tamaki|Fire Force": {
+  "v": "Unlucky",
+  "c": "Unlucky rookie"
+ },
+ "Arthur|Fire Force": {
+  "v": "Delusional",
+  "c": "Delusional knight"
+ },
+ "Takemichi|Tokyo Revengers": {
+  "v": "Timid",
+  "c": "Timid delinquent"
+ },
+ "Mikey|Tokyo Revengers": {
+  "v": "Charismatic",
+  "c": "Gang leader"
+ },
+ "Draken|Tokyo Revengers": {
+  "v": "Loyal",
+  "c": "Loyal delinquent"
+ },
+ "Baji|Tokyo Revengers": {
+  "v": "Reckless",
+  "c": "Reckless delinquent"
+ },
+ "Atsushi|Bungo Stray Dogs": {
+  "v": "Timid",
+  "c": "Timid orphan"
+ },
+ "Dazai|Bungo Stray Dogs": {
+  "v": "Eccentric",
+  "c": "Eccentric detective"
+ },
+ "Akutagawa|Bungo Stray Dogs": {
+  "v": "Ruthless",
+  "c": "Ruthless agent"
+ },
+ "Chuuya|Bungo Stray Dogs": {
+  "v": "Hot-headed",
+  "c": "Hot-headed mafioso"
+ },
+ "Rin Okumura|Blue Exorcist": {
+  "v": "Hot-headed",
+  "c": "Hot-headed exorcist"
+ },
+ "Yukio|Blue Exorcist": {
+  "v": "Composed",
+  "c": "Composed exorcist"
+ },
+ "Shiemi|Blue Exorcist": {
+  "v": "Gentle",
+  "c": "Gentle exorcist"
+ },
+ "Suguro|Blue Exorcist": {
+  "v": "Determined",
+  "c": "Determined exorcist"
+ },
+ "Maka|Soul Eater": {
+  "v": "Diligent",
+  "c": "Diligent meister"
+ },
+ "Soul|Soul Eater": {
+  "v": "Laid-back",
+  "c": "Laid-back weapon"
+ },
+ "Death the Kid|Soul Eater": {
+  "v": "Meticulous",
+  "c": "Obsessive reaper"
+ },
+ "Black Star|Soul Eater": {
+  "v": "Boastful",
+  "c": "Boastful assassin"
+ },
+ "Yugi|Yu-Gi-Oh": {
+  "v": "Brave",
+  "c": "Brave duellist"
+ },
+ "Seto Kaiba|Yu-Gi-Oh": {
+  "v": "Arrogant",
+  "c": "Arrogant duellist"
+ },
+ "Joey Wheeler|Yu-Gi-Oh": {
+  "v": "Hot-headed",
+  "c": "Hot-headed duellist"
+ },
+ "Yami Yugi|Yu-Gi-Oh": {
+  "v": "Commanding",
+  "c": "Commanding duellist"
+ },
+ "Yoh|Shaman King": {
+  "v": "Laid-back",
+  "c": "Laid-back shaman"
+ },
+ "Anna|Shaman King": {
+  "v": "Stern",
+  "c": "Stern shaman"
+ },
+ "Amidamaru|Shaman King": {
+  "v": "Loyal",
+  "c": "Loyal spirit"
+ },
+ "Hao|Shaman King": {
+  "v": "Arrogant",
+  "c": "Arrogant shaman"
+ },
+ "Kafka Hibino|Kaiju No. 8": {
+  "v": "Determined",
+  "c": "Determined soldier"
+ },
+ "Kikoru|Kaiju No. 8": {
+  "v": "Elite",
+  "c": "Elite soldier"
+ },
+ "Reno|Kaiju No. 8": {
+  "v": "Eager",
+  "c": "Eager soldier"
+ },
+ "Mash Burnedead|Mashle": {
+  "v": "Stoic",
+  "c": "Stoic mage"
+ },
+ "Lance|Mashle": {
+  "v": "Serious",
+  "c": "Serious mage"
+ },
+ "Finn|Mashle": {
+  "v": "Timid",
+  "c": "Timid mage"
+ },
+ "Momo|Dandadan": {
+  "v": "Brave",
+  "c": "Brave medium"
+ },
+ "Okarun|Dandadan": {
+  "v": "Awkward",
+  "c": "Awkward nerd"
+ },
+ "Turbo Granny|Dandadan": {
+  "v": "Mischievous",
+  "c": "Mischievous spirit"
+ },
+ "Kenshin|Rurouni Kenshin": {
+  "v": "Humble",
+  "c": "Humble swordsman"
+ },
+ "Saito|Rurouni Kenshin": {
+  "v": "Stern",
+  "c": "Stern swordsman"
+ },
+ "Sanosuke|Rurouni Kenshin": {
+  "v": "Brash",
+  "c": "Brash brawler"
+ },
+ "Yato|Noragami": {
+  "v": "Carefree",
+  "c": "Carefree god"
+ },
+ "Yukine|Noragami": {
+  "v": "Moody",
+  "c": "Moody spirit"
+ },
+ "Hiyori|Noragami": {
+  "v": "Kind",
+  "c": "Kind schoolgirl"
+ },
+ "Baki Hanma|Baki": {
+  "v": "Determined",
+  "c": "Determined fighter"
+ },
+ "Yujiro Hanma|Baki": {
+  "v": "Brutal",
+  "c": "Brutal fighter"
+ },
+ "Doppo|Baki": {
+  "v": "Tough",
+  "c": "Veteran fighter"
+ },
+ "Akame|Akame ga Kill": {
+  "v": "Stoic",
+  "c": "Deadly assassin"
+ },
+ "Tatsumi|Akame ga Kill": {
+  "v": "Earnest",
+  "c": "Earnest assassin"
+ },
+ "Esdeath|Akame ga Kill": {
+  "v": "Sadistic",
+  "c": "Sadistic general"
+ },
+ "Aladdin|Magi": {
+  "v": "Cheerful",
+  "c": "Cheerful magi"
+ },
+ "Alibaba|Magi": {
+  "v": "Brave",
+  "c": "Brave adventurer"
+ },
+ "Morgiana|Magi": {
+  "v": "Loyal",
+  "c": "Loyal warrior"
+ },
+ "Jin Mori|The God of High School": {
+  "v": "Cocky",
+  "c": "Cocky martial artist"
+ },
+ "Han Daewi|The God of High School": {
+  "v": "Loyal",
+  "c": "Loyal martial artist"
+ },
+ "Yoo Mira|The God of High School": {
+  "v": "Fierce",
+  "c": "Fierce swordfighter"
+ },
+ "Light Yagami|Death Note": {
+  "v": "Calculating",
+  "c": "Calculating student"
+ },
+ "L|Death Note": {
+  "v": "Eccentric",
+  "c": "Eccentric detective"
+ },
+ "Ryuk|Death Note": {
+  "v": "Mischievous",
+  "c": "Mischievous death god"
+ },
+ "Misa|Death Note": {
+  "v": "Devoted",
+  "c": "Devoted idol"
+ },
+ "Near|Death Note": {
+  "v": "Analytical",
+  "c": "Analytical detective"
+ },
+ "Eren|Attack on Titan": {
+  "v": "Rebellious",
+  "c": "Rebellious soldier"
+ },
+ "Mikasa|Attack on Titan": {
+  "v": "Loyal",
+  "c": "Loyal soldier"
+ },
+ "Levi|Attack on Titan": {
+  "v": "Skilled",
+  "c": "Elite soldier"
+ },
+ "Armin|Attack on Titan": {
+  "v": "Clever",
+  "c": "Clever soldier"
+ },
+ "Erwin|Attack on Titan": {
+  "v": "Commander",
+  "c": "Bold commander"
+ },
+ "Annie|Attack on Titan": {
+  "v": "Cold",
+  "c": "Cold soldier"
+ },
+ "Reiner|Attack on Titan": {
+  "v": "Conflicted",
+  "c": "Conflicted soldier"
+ },
+ "Kaneki|Tokyo Ghoul": {
+  "v": "Tormented",
+  "c": "Tormented ghoul"
+ },
+ "Touka|Tokyo Ghoul": {
+  "v": "Fierce",
+  "c": "Fierce ghoul"
+ },
+ "Juuzou|Tokyo Ghoul": {
+  "v": "Unhinged",
+  "c": "Unhinged investigator"
+ },
+ "Guts|Berserk": {
+  "v": "Swordsman",
+  "c": "Scarred swordsman"
+ },
+ "Griffith|Berserk": {
+  "v": "Ambitious",
+  "c": "Ambitious leader"
+ },
+ "Casca|Berserk": {
+  "v": "Warrior",
+  "c": "Hardened warrior"
+ },
+ "Johan Liebert|Monster": {
+  "v": "Sinister",
+  "c": "Sinister manipulator"
+ },
+ "Dr Tenma|Monster": {
+  "v": "Compassionate",
+  "c": "Compassionate surgeon"
+ },
+ "Thorfinn|Vinland Saga": {
+  "v": "Vengeful",
+  "c": "Vengeful viking"
+ },
+ "Askeladd|Vinland Saga": {
+  "v": "Cunning",
+  "c": "Cunning mercenary"
+ },
+ "Canute|Vinland Saga": {
+  "v": "Timid",
+  "c": "Timid prince"
+ },
+ "Migi|Parasyte": {
+  "v": "Parasite",
+  "c": "Alien parasite"
+ },
+ "Shinichi Izumi|Parasyte": {
+  "v": "Conflicted",
+  "c": "Conflicted host"
+ },
+ "Akane Tsunemori|Psycho-Pass": {
+  "v": "Dutiful",
+  "c": "Dutiful inspector"
+ },
+ "Makishima|Psycho-Pass": {
+  "v": "Sinister",
+  "c": "Sinister criminal"
+ },
+ "Yuno Gasai|Future Diary": {
+  "v": "Obsessive",
+  "c": "Obsessive stalker"
+ },
+ "Alucard|Hellsing": {
+  "v": "Vampire",
+  "c": "Powerful vampire"
+ },
+ "Lucy|Elfen Lied": {
+  "v": "Tormented",
+  "c": "Tormented mutant"
+ },
+ "Satoru Fujinuma|Erased": {
+  "v": "Observant",
+  "c": "Observant time-traveller"
+ },
+ "Gabimaru|Hell's Paradise": {
+  "v": "Stoic",
+  "c": "Stoic ninja"
+ },
+ "Kirito|Sword Art Online": {
+  "v": "Swordsman",
+  "c": "Lone swordsman"
+ },
+ "Asuna|Sword Art Online": {
+  "v": "Skilled",
+  "c": "Skilled swordfighter"
+ },
+ "Subaru|Re:Zero": {
+  "v": "Persistent",
+  "c": "Persistent otaku"
+ },
+ "Rem|Re:Zero": {
+  "v": "Devoted",
+  "c": "Devoted maid"
+ },
+ "Ram|Re:Zero": {
+  "v": "Sharp-tongued",
+  "c": "Sharp-tongued maid"
+ },
+ "Emilia|Re:Zero": {
+  "v": "Kind",
+  "c": "Kind half-elf"
+ },
+ "Ainz|Overlord": {
+  "v": "Overlord",
+  "c": "Skeletal overlord"
+ },
+ "Albedo|Overlord": {
+  "v": "Devoted",
+  "c": "Devoted guardian"
+ },
+ "Kazuma|Konosuba": {
+  "v": "Sarcastic",
+  "c": "Sarcastic adventurer"
+ },
+ "Aqua|Konosuba": {
+  "v": "Useless",
+  "c": "Useless goddess"
+ },
+ "Megumin|Konosuba": {
+  "v": "Obsessive",
+  "c": "Explosion mage"
+ },
+ "Darkness|Konosuba": {
+  "v": "Eccentric",
+  "c": "Eccentric knight"
+ },
+ "Rimuru|Reincarnated as a Slime": {
+  "v": "Wise",
+  "c": "Wise slime"
+ },
+ "Milim|Reincarnated as a Slime": {
+  "v": "Playful",
+  "c": "Playful demon lord"
+ },
+ "Rudeus|Mushoku Tensei": {
+  "v": "Talented",
+  "c": "Talented mage"
+ },
+ "Roxy|Mushoku Tensei": {
+  "v": "Mage",
+  "c": "Modest mage"
+ },
+ "Eris|Mushoku Tensei": {
+  "v": "Feisty",
+  "c": "Feisty swordfighter"
+ },
+ "Naofumi|Shield Hero": {
+  "v": "Bitter",
+  "c": "Bitter shield hero"
+ },
+ "Raphtalia|Shield Hero": {
+  "v": "Loyal",
+  "c": "Loyal swordfighter"
+ },
+ "Frieren|Frieren": {
+  "v": "Ancient",
+  "c": "Ancient elf mage"
+ },
+ "Fern|Frieren": {
+  "v": "Composed",
+  "c": "Composed mage"
+ },
+ "Himmel|Frieren": {
+  "v": "Heroic",
+  "c": "Heroic adventurer"
+ },
+ "Stark|Frieren": {
+  "v": "Nervous",
+  "c": "Nervous warrior"
+ },
+ "Sora|No Game No Life": {
+  "v": "Genius",
+  "c": "Genius gamer"
+ },
+ "Shiro|No Game No Life": {
+  "v": "Genius",
+  "c": "Genius gamer"
+ },
+ "Sung Jinwoo|Solo Leveling": {
+  "v": "Ambitious",
+  "c": "Rising hunter"
+ },
+ "Cha Hae-In|Solo Leveling": {
+  "v": "Elite",
+  "c": "Elite hunter"
+ },
+ "Bell Cranel|DanMachi": {
+  "v": "Eager",
+  "c": "Eager adventurer"
+ },
+ "Hestia|DanMachi": {
+  "v": "Cheerful",
+  "c": "Cheerful goddess"
+ },
+ "Cid Kagenou|The Eminence in Shadow": {
+  "v": "Theatrical",
+  "c": "Theatrical schemer"
+ },
+ "Hinata|Haikyuu": {
+  "v": "Energetic",
+  "c": "Energetic volleyball player"
+ },
+ "Kageyama|Haikyuu": {
+  "v": "Talented",
+  "c": "Talented setter"
+ },
+ "Oikawa|Haikyuu": {
+  "v": "Charismatic",
+  "c": "Charismatic setter"
+ },
+ "Nishinoya|Haikyuu": {
+  "v": "Energetic",
+  "c": "Energetic libero"
+ },
+ "Tsukishima|Haikyuu": {
+  "v": "Sarcastic",
+  "c": "Sarcastic blocker"
+ },
+ "Bokuto|Haikyuu": {
+  "v": "Boisterous",
+  "c": "Boisterous ace"
+ },
+ "Isagi|Blue Lock": {
+  "v": "Sharp",
+  "c": "Sharp striker"
+ },
+ "Bachira|Blue Lock": {
+  "v": "Playful",
+  "c": "Playful striker"
+ },
+ "Rin Itoshi|Blue Lock": {
+  "v": "Cold",
+  "c": "Cold striker"
+ },
+ "Barou|Blue Lock": {
+  "v": "Arrogant",
+  "c": "Arrogant striker"
+ },
+ "Nagi|Blue Lock": {
+  "v": "Lazy",
+  "c": "Lazy striker"
+ },
+ "Reo|Blue Lock": {
+  "v": "Wealthy",
+  "c": "Wealthy striker"
+ },
+ "Kuroko|Kuroko's Basketball": {
+  "v": "Unnoticed",
+  "c": "Invisible playmaker"
+ },
+ "Kagami|Kuroko's Basketball": {
+  "v": "Fiery",
+  "c": "Fiery basketball player"
+ },
+ "Aomine|Kuroko's Basketball": {
+  "v": "Gifted",
+  "c": "Gifted scorer"
+ },
+ "Kise|Kuroko's Basketball": {
+  "v": "Flashy",
+  "c": "Flashy copycat"
+ },
+ "Midorima|Kuroko's Basketball": {
+  "v": "Precise",
+  "c": "Precise shooter"
+ },
+ "Akashi|Kuroko's Basketball": {
+  "v": "Commanding",
+  "c": "Commanding captain"
+ },
+ "Sakuragi|Slam Dunk": {
+  "v": "Hot-headed",
+  "c": "Hot-headed rookie"
+ },
+ "Rukawa|Slam Dunk": {
+  "v": "Aloof",
+  "c": "Aloof ace"
+ },
+ "Ippo|Hajime no Ippo": {
+  "v": "Timid",
+  "c": "Timid boxer"
+ },
+ "Takamura|Hajime no Ippo": {
+  "v": "Brash",
+  "c": "Brash boxer"
+ },
+ "Haruka Nanase|Free!": {
+  "v": "Reserved",
+  "c": "Reserved swimmer"
+ },
+ "Rin Matsuoka|Free!": {
+  "v": "Competitive",
+  "c": "Competitive swimmer"
+ },
+ "Yuri Katsuki|Yuri on Ice": {
+  "v": "Anxious",
+  "c": "Anxious skater"
+ },
+ "Victor Nikiforov|Yuri on Ice": {
+  "v": "Flamboyant",
+  "c": "Flamboyant skater"
+ },
+ "Takumi Fujiwara|Initial D": {
+  "v": "Quiet",
+  "c": "Quiet racer"
+ },
+ "Soma Yukihira|Food Wars": {
+  "v": "Confident",
+  "c": "Confident chef"
+ },
+ "Erina|Food Wars": {
+  "v": "Haughty",
+  "c": "Haughty chef"
+ },
+ "Sena Kobayakawa|Eyeshield 21": {
+  "v": "Timid",
+  "c": "Speedy runner"
+ },
+ "Kaguya|Kaguya-sama": {
+  "v": "Prideful",
+  "c": "Prideful student"
+ },
+ "Miyuki Shirogane|Kaguya-sama": {
+  "v": "Diligent",
+  "c": "Diligent student"
+ },
+ "Chika|Kaguya-sama": {
+  "v": "Bubbly",
+  "c": "Bubbly student"
+ },
+ "Ishigami|Kaguya-sama": {
+  "v": "Gloomy",
+  "c": "Gloomy student"
+ },
+ "Taiga|Toradora": {
+  "v": "Fiery",
+  "c": "Fiery schoolgirl"
+ },
+ "Ryuuji|Toradora": {
+  "v": "Gentle",
+  "c": "Gentle schoolboy"
+ },
+ "Hori|Horimiya": {
+  "v": "Popular",
+  "c": "Popular schoolgirl"
+ },
+ "Miyamura|Horimiya": {
+  "v": "Quiet",
+  "c": "Quiet schoolboy"
+ },
+ "Tohru Honda|Fruits Basket": {
+  "v": "Selfless",
+  "c": "Selfless schoolgirl"
+ },
+ "Kyo Sohma|Fruits Basket": {
+  "v": "Hot-headed",
+  "c": "Hot-headed schoolboy"
+ },
+ "Yuki Sohma|Fruits Basket": {
+  "v": "Princely",
+  "c": "Princely schoolboy"
+ },
+ "Nagisa|Clannad": {
+  "v": "Gentle",
+  "c": "Gentle student"
+ },
+ "Tomoya|Clannad": {
+  "v": "Cynical",
+  "c": "Cynical student"
+ },
+ "Kousei|Your Lie in April": {
+  "v": "Pianist",
+  "c": "Gifted pianist"
+ },
+ "Kaori|Your Lie in April": {
+  "v": "Free-spirited",
+  "c": "Free-spirited violinist"
+ },
+ "Chizuru|Rent-a-Girlfriend": {
+  "v": "Ambitious",
+  "c": "Aspiring actress"
+ },
+ "Marin Kitagawa|My Dress-Up Darling": {
+  "v": "Bubbly",
+  "c": "Bubbly cosplayer"
+ },
+ "Wakana Gojo|My Dress-Up Darling": {
+  "v": "Shy",
+  "c": "Shy doll-maker"
+ },
+ "Komi|Komi Can't Communicate": {
+  "v": "Shy",
+  "c": "Shy schoolgirl"
+ },
+ "Tadano|Komi Can't Communicate": {
+  "v": "Ordinary",
+  "c": "Ordinary schoolboy"
+ },
+ "Yui Hirasawa|K-On": {
+  "v": "Carefree",
+  "c": "Carefree guitarist"
+ },
+ "Mio Akiyama|K-On": {
+  "v": "Shy",
+  "c": "Shy bassist"
+ },
+ "Bocchi|Bocchi the Rock": {
+  "v": "Anxious",
+  "c": "Anxious guitarist"
+ },
+ "Nijika|Bocchi the Rock": {
+  "v": "Cheerful",
+  "c": "Cheerful drummer"
+ },
+ "Violet Evergarden|Violet Evergarden": {
+  "v": "Stoic",
+  "c": "Stoic ex-soldier"
+ },
+ "Ai Hoshino|Oshi no Ko": {
+  "v": "Radiant",
+  "c": "Radiant idol"
+ },
+ "Aqua Hoshino|Oshi no Ko": {
+  "v": "Cynical",
+  "c": "Cynical child star"
+ },
+ "Ruby Hoshino|Oshi no Ko": {
+  "v": "Bubbly",
+  "c": "Bubbly aspiring idol"
+ },
+ "Anya|Spy x Family": {
+  "v": "Playful",
+  "c": "Mind-reading child"
+ },
+ "Loid|Spy x Family": {
+  "v": "Composed",
+  "c": "Composed spy"
+ },
+ "Yor|Spy x Family": {
+  "v": "Gentle",
+  "c": "Gentle assassin"
+ },
+ "Bond|Spy x Family": {
+  "v": "Loyal",
+  "c": "Psychic dog"
+ },
+ "Damian|Spy x Family": {
+  "v": "Prideful",
+  "c": "Proud rich kid"
+ },
+ "Becky|Spy x Family": {
+  "v": "Loyal",
+  "c": "Wealthy friend"
+ },
+ "Franky|Spy x Family": {
+  "v": "Nervous",
+  "c": "Nervous informant"
+ },
+ "Gintoki|Gintama": {
+  "v": "Lazy",
+  "c": "Lazy samurai"
+ },
+ "Kagura|Gintama": {
+  "v": "Gluttonous",
+  "c": "Gluttonous fighter"
+ },
+ "Shinpachi|Gintama": {
+  "v": "Ordinary",
+  "c": "Ordinary sidekick"
+ },
+ "Hijikata|Gintama": {
+  "v": "Strict",
+  "c": "Strict officer"
+ },
+ "Okita|Gintama": {
+  "v": "Sadistic",
+  "c": "Sadistic swordsman"
+ },
+ "Mob|Mob Psycho 100": {
+  "v": "Reserved",
+  "c": "Reserved esper"
+ },
+ "Reigen|Mob Psycho 100": {
+  "v": "Charismatic",
+  "c": "Charismatic conman"
+ },
+ "Ritsu|Mob Psycho 100": {
+  "v": "Composed",
+  "c": "Composed esper"
+ },
+ "Dimple|Mob Psycho 100": {
+  "v": "Mischievous",
+  "c": "Mischievous spirit"
+ },
+ "Saiki|Saiki K": {
+  "v": "Aloof",
+  "c": "Aloof psychic"
+ },
+ "Nendo|Saiki K": {
+  "v": "Dim-witted",
+  "c": "Dim-witted friend"
+ },
+ "Teruhashi|Saiki K": {
+  "v": "Adored",
+  "c": "Adored idol"
+ },
+ "Kaido|Saiki K": {
+  "v": "Delusional",
+  "c": "Delusional chuuni"
+ },
+ "Onizuka|Great Teacher Onizuka": {
+  "v": "Wild",
+  "c": "Wild teacher"
+ },
+ "Tatsu the Immortal|Way of the Househusband": {
+  "v": "Intimidating",
+  "c": "Intimidating househusband"
+ },
+ "Sakamoto|I'm Sakamoto": {
+  "v": "Flawless",
+  "c": "Flawless student"
+ },
+ "Umaru|Umaru-chan": {
+  "v": "Two-faced",
+  "c": "Two-faced sister"
+ },
+ "Nano|Nichijou": {
+  "v": "Earnest",
+  "c": "Earnest robot"
+ },
+ "Iori Kitahara|Grand Blue": {
+  "v": "Overwhelmed",
+  "c": "Overwhelmed student"
+ },
+ "Kohei Imamura|Grand Blue": {
+  "v": "Dramatic",
+  "c": "Dramatic diver"
+ },
+ "Shinji|Evangelion": {
+  "v": "Timid",
+  "c": "Timid pilot"
+ },
+ "Rei Ayanami|Evangelion": {
+  "v": "Mysterious",
+  "c": "Mysterious pilot"
+ },
+ "Asuka|Evangelion": {
+  "v": "Fiery",
+  "c": "Fiery pilot"
+ },
+ "Misato|Evangelion": {
+  "v": "Carefree",
+  "c": "Carefree commander"
+ },
+ "Gendo|Evangelion": {
+  "v": "Cold",
+  "c": "Cold commander"
+ },
+ "Kaworu|Evangelion": {
+  "v": "Enigmatic",
+  "c": "Enigmatic pilot"
+ },
+ "Lelouch|Code Geass": {
+  "v": "Strategic",
+  "c": "Strategic rebel"
+ },
+ "C.C.|Code Geass": {
+  "v": "Mysterious",
+  "c": "Immortal accomplice"
+ },
+ "Suzaku|Code Geass": {
+  "v": "Loyal",
+  "c": "Loyal soldier"
+ },
+ "Kallen|Code Geass": {
+  "v": "Fierce",
+  "c": "Fierce pilot"
+ },
+ "Okabe|Steins;Gate": {
+  "v": "Eccentric",
+  "c": "Mad scientist"
+ },
+ "Kurisu|Steins;Gate": {
+  "v": "Brilliant",
+  "c": "Brilliant scientist"
+ },
+ "Mayuri|Steins;Gate": {
+  "v": "Sweet",
+  "c": "Sweet friend"
+ },
+ "Daru|Steins;Gate": {
+  "v": "Hacker",
+  "c": "Genius hacker"
+ },
+ "Amuro Ray|Gundam": {
+  "v": "Reluctant",
+  "c": "Reluctant pilot"
+ },
+ "Char Aznable|Gundam": {
+  "v": "Masked",
+  "c": "Masked pilot"
+ },
+ "Motoko Kusanagi|Ghost in the Shell": {
+  "v": "Cyborg",
+  "c": "Cyborg agent"
+ },
+ "Batou|Ghost in the Shell": {
+  "v": "Tough",
+  "c": "Tough agent"
+ },
+ "Spike Spiegel|Cowboy Bebop": {
+  "v": "Laid-back",
+  "c": "Laid-back bounty hunter"
+ },
+ "Faye Valentine|Cowboy Bebop": {
+  "v": "Sly",
+  "c": "Sly bounty hunter"
+ },
+ "Jet Black|Cowboy Bebop": {
+  "v": "Gruff",
+  "c": "Gruff bounty hunter"
+ },
+ "Edward Wong|Cowboy Bebop": {
+  "v": "Quirky",
+  "c": "Quirky hacker"
+ },
+ "Ein|Cowboy Bebop": {
+  "v": "Clever",
+  "c": "Clever dog"
+ },
+ "Kaneda|Akira": {
+  "v": "Rebellious",
+  "c": "Rebellious biker"
+ },
+ "Tetsuo|Akira": {
+  "v": "Unstable",
+  "c": "Unstable esper"
+ },
+ "Zero Two|Darling in the Franxx": {
+  "v": "Flirtatious",
+  "c": "Flirtatious pilot"
+ },
+ "Hiro|Darling in the Franxx": {
+  "v": "Earnest",
+  "c": "Earnest pilot"
+ },
+ "David Martinez|Cyberpunk Edgerunners": {
+  "v": "Ambitious",
+  "c": "Ambitious mercenary"
+ },
+ "Lucy Kushinada|Cyberpunk Edgerunners": {
+  "v": "Reserved",
+  "c": "Reserved netrunner"
+ },
+ "Rebecca|Cyberpunk Edgerunners": {
+  "v": "Wild",
+  "c": "Wild mercenary"
+ },
+ "Vash the Stampede|Trigun": {
+  "v": "Goofy",
+  "c": "Goofy gunman"
+ },
+ "Senku|Dr Stone": {
+  "v": "Genius",
+  "c": "Genius scientist"
+ },
+ "Totoro|My Neighbour Totoro": {
+  "v": "Spirit",
+  "c": "Forest spirit"
+ },
+ "Catbus|My Neighbour Totoro": {
+  "v": "Whimsical",
+  "c": "Whimsical creature"
+ },
+ "Satsuki|My Neighbour Totoro": {
+  "v": "Caring",
+  "c": "Caring sister"
+ },
+ "Mei|My Neighbour Totoro": {
+  "v": "Curious",
+  "c": "Curious child"
+ },
+ "Chihiro|Spirited Away": {
+  "v": "Brave",
+  "c": "Brave girl"
+ },
+ "Haku|Spirited Away": {
+  "v": "Mysterious",
+  "c": "Mysterious dragon boy"
+ },
+ "No-Face|Spirited Away": {
+  "v": "Lonely",
+  "c": "Lonely spirit"
+ },
+ "Yubaba|Spirited Away": {
+  "v": "Greedy",
+  "c": "Greedy witch"
+ },
+ "Boh|Spirited Away": {
+  "v": "Spoiled",
+  "c": "Spoiled baby"
+ },
+ "Howl|Howl's Moving Castle": {
+  "v": "Vain",
+  "c": "Vain wizard"
+ },
+ "Sophie|Howl's Moving Castle": {
+  "v": "Determined",
+  "c": "Cursed hatmaker"
+ },
+ "Calcifer|Howl's Moving Castle": {
+  "v": "Sassy",
+  "c": "Sassy fire demon"
+ },
+ "Markl|Howl's Moving Castle": {
+  "v": "Apprentice",
+  "c": "Wizard apprentice"
+ },
+ "San|Princess Mononoke": {
+  "v": "Wild",
+  "c": "Wild wolf-girl"
+ },
+ "Ashitaka|Princess Mononoke": {
+  "v": "Noble",
+  "c": "Noble prince"
+ },
+ "Kiki|Kiki's Delivery Service": {
+  "v": "Cheerful",
+  "c": "Young witch"
+ },
+ "Jiji|Kiki's Delivery Service": {
+  "v": "Sarcastic",
+  "c": "Sarcastic cat"
+ },
+ "Ponyo|Ponyo": {
+  "v": "Playful",
+  "c": "Playful fish-girl"
+ },
+ "Sosuke|Ponyo": {
+  "v": "Innocent",
+  "c": "Innocent boy"
+ },
+ "Taki|Your Name": {
+  "v": "Earnest",
+  "c": "Body-swapping boy"
+ },
+ "Mitsuha|Your Name": {
+  "v": "Yearning",
+  "c": "Body-swapping girl"
+ },
+ "Hodaka|Weathering With You": {
+  "v": "Runaway",
+  "c": "Runaway boy"
+ },
+ "Hina|Weathering With You": {
+  "v": "Selfless",
+  "c": "Selfless girl"
+ },
+ "Suzume|Suzume": {
+  "v": "Brave",
+  "c": "Brave girl"
+ },
+ "Souta|Suzume": {
+  "v": "Cursed",
+  "c": "Cursed young man"
+ },
+ "Shoya|A Silent Voice": {
+  "v": "Remorseful",
+  "c": "Remorseful teen"
+ },
+ "Shoko|A Silent Voice": {
+  "v": "Gentle",
+  "c": "Gentle deaf girl"
+ },
+ "Mahito|The Boy and the Heron": {
+  "v": "Grieving",
+  "c": "Grieving boy"
+ },
+ "The Grey Heron|The Boy and the Heron": {
+  "v": "Deceptive",
+  "c": "Deceptive bird"
+ },
+ "Sheeta|Castle in the Sky": {
+  "v": "Gentle",
+  "c": "Gentle girl"
+ },
+ "Pazu|Castle in the Sky": {
+  "v": "Brave",
+  "c": "Brave boy"
+ },
+ "Usagi|Sailor Moon": {
+  "v": "Clumsy",
+  "c": "Clumsy magical girl"
+ },
+ "Tuxedo Mask|Sailor Moon": {
+  "v": "Masked",
+  "c": "Masked hero"
+ },
+ "Sailor Mars|Sailor Moon": {
+  "v": "Fiery",
+  "c": "Fiery magical girl"
+ },
+ "Luna|Sailor Moon": {
+  "v": "Wise",
+  "c": "Wise talking cat"
+ },
+ "Pikachu|Pokemon": {
+  "v": "Electric",
+  "c": "Electric creature"
+ },
+ "Ash|Pokemon": {
+  "v": "Determined",
+  "c": "Determined trainer"
+ },
+ "Misty|Pokemon": {
+  "v": "Fiery",
+  "c": "Water-type trainer"
+ },
+ "Brock|Pokemon": {
+  "v": "Nurturing",
+  "c": "Nurturing trainer"
+ },
+ "Charizard|Pokemon": {
+  "v": "Fierce",
+  "c": "Fire creature"
+ },
+ "Mewtwo|Pokemon": {
+  "v": "Powerful",
+  "c": "Powerful creature"
+ },
+ "Jessie and James|Pokemon": {
+  "v": "Bumbling",
+  "c": "Bumbling villains"
+ },
+ "Agumon|Digimon": {
+  "v": "Loyal",
+  "c": "Loyal digital creature"
+ },
+ "Tai|Digimon": {
+  "v": "Brave",
+  "c": "Brave kid leader"
+ },
+ "Astro Boy|Astro Boy": {
+  "v": "Innocent",
+  "c": "Robot boy"
+ },
+ "Doraemon|Doraemon": {
+  "v": "Helpful",
+  "c": "Gadget robot cat"
+ },
+ "Nobita|Doraemon": {
+  "v": "Lazy",
+  "c": "Lazy schoolboy"
+ },
+ "Inuyasha|Inuyasha": {
+  "v": "Hot-headed",
+  "c": "Hot-headed half-demon"
+ },
+ "Kagome|Inuyasha": {
+  "v": "Kind",
+  "c": "Kind time-traveller"
+ },
+ "Sesshomaru|Inuyasha": {
+  "v": "Cold",
+  "c": "Cold demon lord"
+ },
+ "Ranma|Ranma 1/2": {
+  "v": "Hot-headed",
+  "c": "Gender-swapping martial artist"
+ },
+ "Detective Conan|Detective Conan": {
+  "v": "Clever",
+  "c": "Boy detective"
+ },
+ "Lupin|Lupin III": {
+  "v": "Charming",
+  "c": "Charming thief"
+ },
+ "Zenigata|Lupin III": {
+  "v": "Persistent",
+  "c": "Persistent inspector"
+ },
+ "Kid Goku|Dragon Ball": {
+  "v": "Naive",
+  "c": "Naive martial artist"
+ },
+ "Master Roshi|Dragon Ball": {
+  "v": "Perverted",
+  "c": "Perverted master"
+ },
+ "Speed Racer|Speed Racer": {
+  "v": "Daring",
+  "c": "Daring racer"
+ },
+ "Tsubasa|Captain Tsubasa": {
+  "v": "Passionate",
+  "c": "Passionate footballer"
+ }
 };
 
 /* ============ WORD BANK ============ */
@@ -1155,7 +2253,7 @@ let sbClient = null, channel = null;
 let roomCode = '', myId = '', myName = '', myEmoji = '';
 let presencePlayers = [];      // [{id,name,emoji,joinedAt}]
 let game = null;               // latest broadcast game state (null = lobby, or {phase:'lobby',settings})
-let mySettings = { categories: ['Shonen Battle'], hint: true, impostors: 1 };
+let mySettings = { categories: ['Shonen Battle'], clueLevel: 'vague', impostors: 1 };
 let subscribed = false;
 let rebroadcastTimer = null;
 
@@ -1348,6 +2446,18 @@ function maybeFinishVote() {
   if (done) { game.phase = 'reveal'; }
 }
 
+// The impostor's clue text for the current character, or null (respects the tier).
+function impostorClue() {
+  if (!game) return null;
+  const lvl = game.settings.clueLevel || (game.settings.hint === false ? 'off' : 'vague');
+  if (lvl === 'off') return null;
+  const entry = CHAR_HINTS[game.word + '|' + game.show];
+  if (!entry) return null;
+  // entry is { v, c }; older builds stored a plain string.
+  if (typeof entry === 'string') return entry;
+  return lvl === 'clear' ? entry.c : entry.v;
+}
+
 function computeResults() {
   const tally = {};
   Object.values(game.votes).forEach(t => { tally[t] = (tally[t] || 0) + 1; });
@@ -1400,10 +2510,11 @@ function renderPlay() {
   // The role card is shown during the character check and the round itself.
   if (game.phase === 'check' || game.phase === 'playing') {
     $('role-area').style.display = 'block';
+    const clueText = impostorClue();
     roleContent = !inRound
       ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
       : amImpostor
-        ? { big: 'IMPOSTOR!', sub: (game.settings.hint && CHAR_HINTS[game.word + '|' + game.show]) ? 'Clue: ' + CHAR_HINTS[game.word + '|' + game.show] : 'No clue. Blend in and survive.', cls: 'imp' }
+        ? { big: 'IMPOSTOR!', sub: clueText ? 'Clue: ' + clueText : 'No clue. Blend in and survive.', cls: 'imp' }
         : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew', img: CHAR_IMAGES[game.word + '|' + game.show] };
     // Re-open the card each new round and each re-deal within the check.
     const stamp = game.round + ':' + game.word;
@@ -1533,9 +2644,12 @@ function syncCats() {
 }
 $('cats-all').addEventListener('click', () => { document.querySelectorAll('.cat').forEach(d => d.classList.add('on')); syncCats(); });
 $('cats-none').addEventListener('click', () => { document.querySelectorAll('.cat').forEach(d => d.classList.remove('on')); syncCats(); });
-$('opt-hint').addEventListener('change', e => { mySettings.hint = e.target.checked; });
-document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.seg button').forEach(x => x.classList.remove('on'));
+document.querySelectorAll('#seg-clue button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#seg-clue button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); mySettings.clueLevel = b.dataset.clue;
+}));
+document.querySelectorAll('#seg-imp button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#seg-imp button').forEach(x => x.classList.remove('on'));
   b.classList.add('on'); mySettings.impostors = parseInt(b.dataset.n, 10);
 }));
 
