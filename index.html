@@ -234,7 +234,8 @@ input[type=text]:focus{border-color:var(--purple)}
       <button class="leave" id="btn-leave-game">leave</button>
     </div>
 
-    <div id="phase-playing" style="display:none">
+    <!-- role card is shown during both the character check and the round -->
+    <div id="role-area" style="display:none">
       <div class="role-card" id="role-card">
         <div class="peek-hint" id="peek-hint">CARD HIDDEN. TAP TO SHOW</div>
         <img class="char-img" id="role-img" alt="" style="display:none">
@@ -242,6 +243,22 @@ input[type=text]:focus{border-color:var(--purple)}
         <div class="word-cat" id="role-sub" style="display:none"></div>
       </div>
       <div class="hint" style="text-align:center">Your card stays open, it is only on your screen. Tap it to hide if you are screen sharing.</div>
+    </div>
+
+    <div id="phase-check" style="display:none">
+      <div class="card">
+        <div class="section-title">DOES EVERYONE KNOW THIS?</div>
+        <div class="hint" style="margin-top:0">If you do not recognise this character, vote to skip and a new one is dealt. Majority wins. The impostor votes too, going only on the clue.</div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn gold" id="btn-check-go">I KNOW IT</button>
+          <button class="btn alt" id="btn-check-skip">SKIP THIS ONE</button>
+        </div>
+        <div class="waiting" id="check-waiting"></div>
+      </div>
+      <div class="host-note" id="check-note"></div>
+    </div>
+
+    <div id="phase-playing" style="display:none">
       <div class="card" style="margin-top:14px">
         <div class="section-title">SPEAKING ORDER</div>
         <div class="order-list" id="order-list"></div>
@@ -564,7 +581,97 @@ const CHAR_IMAGES = {
  "Lucy Kushinada|Cyberpunk Edgerunners": "https://s4.anilist.co/file/anilistcdn/character/large/b284157-cqYawN7XCNJx.jpg",
  "Catbus|My Neighbour Totoro": "https://s4.anilist.co/file/anilistcdn/character/large/271.jpg",
  "Lupin|Lupin III": "https://s4.anilist.co/file/anilistcdn/character/large/1044-UriNGSc2CKPO.jpg",
- "Sung Jinwoo|Solo Leveling": "https://s4.anilist.co/file/anilistcdn/character/large/b129928-BCEjVaP0AQSw.png"
+ "Sung Jinwoo|Solo Leveling": "https://s4.anilist.co/file/anilistcdn/character/large/b129928-BCEjVaP0AQSw.png",
+ "Gaara|Naruto": "https://s4.anilist.co/file/anilistcdn/character/large/b1662-4E5J0LX9jZKZ.png",
+ "Nami|One Piece": "https://s4.anilist.co/file/anilistcdn/character/large/b723-vp5hPptgnNEC.png",
+ "Gohan|Dragon Ball Z": "https://s4.anilist.co/file/anilistcdn/character/large/b2093-kdFZhqcNSsqW.png",
+ "Piccolo|Dragon Ball Z": "https://s4.anilist.co/file/anilistcdn/character/large/b914-KuS8AWjqBrqa.jpg",
+ "Byakuya|Bleach": "https://s4.anilist.co/file/anilistcdn/character/large/b907-kgnDKeMtEN5y.png",
+ "Kenpachi|Bleach": "https://s4.anilist.co/file/anilistcdn/character/large/b909-slhoFBon7oiH.jpg",
+ "Todoroki|My Hero Academia": "https://s4.anilist.co/file/anilistcdn/character/large/b89220-KNBwaVFAR8FD.png",
+ "Shigaraki|My Hero Academia": "https://s4.anilist.co/file/anilistcdn/character/large/b89226-C1ZKm2U3bR4T.png",
+ "Megumi|Jujutsu Kaisen": "https://s4.anilist.co/file/anilistcdn/character/large/b126635-L0y3I92JSUkN.png",
+ "Nobara|Jujutsu Kaisen": "https://s4.anilist.co/file/anilistcdn/character/large/b133700-f6sOO3TcgLV6.png",
+ "Zenitsu|Demon Slayer": "https://s4.anilist.co/file/anilistcdn/character/large/b129131-FZrQ7lSlxmEr.png",
+ "Inosuke|Demon Slayer": "https://s4.anilist.co/file/anilistcdn/character/large/n129130-SJC0Kn1DU39E.jpg",
+ "Kurapika|Hunter x Hunter": "https://s4.anilist.co/file/anilistcdn/character/large/b28-ivA7UGnfE40a.png",
+ "Leorio|Hunter x Hunter": "https://s4.anilist.co/file/anilistcdn/character/large/b29-RgzoSeKmDYzl.jpg",
+ "Aki|Chainsaw Man": "https://s4.anilist.co/file/anilistcdn/character/large/b137081-TSrUR3mUJL6r.png",
+ "Kobeni|Chainsaw Man": "https://s4.anilist.co/file/anilistcdn/character/large/b144594-0dbO1NSYeZ12.png",
+ "Jotaro|JoJo's Bizarre Adventure": "https://s4.anilist.co/file/anilistcdn/character/large/b4003-gWDSEGbeOAll.png",
+ "Dio|JoJo's Bizarre Adventure": "https://s4.anilist.co/file/anilistcdn/character/large/b4004-w0OtWuvjhftG.png",
+ "Joseph|JoJo's Bizarre Adventure": "https://s4.anilist.co/file/anilistcdn/character/large/b6356-RImEfUfHpC58.png",
+ "Giorno|JoJo's Bizarre Adventure": "https://s4.anilist.co/file/anilistcdn/character/large/b10529-AloL8jjZwjsg.png",
+ "Josuke|JoJo's Bizarre Adventure": "https://s4.anilist.co/file/anilistcdn/character/large/b13085-CkmgXL7SSLxL.jpg",
+ "Garou|One Punch Man": "https://s4.anilist.co/file/anilistcdn/character/large/b89277-xBGb4B5YISXg.png",
+ "Tatsumaki|One Punch Man": "https://s4.anilist.co/file/anilistcdn/character/large/b81929-WPVp2LQoWgkc.png",
+ "Alphonse|Fullmetal Alchemist": "https://s4.anilist.co/file/anilistcdn/character/large/b12-tCKu8yK5kFL5.jpg",
+ "Roy Mustang|Fullmetal Alchemist": "https://s4.anilist.co/file/anilistcdn/character/large/b68-moBLY2WO2am3.png",
+ "Scar|Fullmetal Alchemist": "https://s4.anilist.co/file/anilistcdn/character/large/b66-bLbGWXrmDqfV.png",
+ "Yuno|Black Clover": "https://s4.anilist.co/file/anilistcdn/character/large/b123284-w6kIFYnTclMd.png",
+ "Noelle|Black Clover": "https://s4.anilist.co/file/anilistcdn/character/large/b123283-7nJHtKha0LSm.png",
+ "Yami|Black Clover": "https://s4.anilist.co/file/anilistcdn/character/large/b124440-Lpdo6y8cljV6.png",
+ "Gray|Fairy Tail": "https://s4.anilist.co/file/anilistcdn/character/large/b4839-p2SBgjdTxHxk.png",
+ "Erza|Fairy Tail": "https://s4.anilist.co/file/anilistcdn/character/large/b5189-GR1xdok9SFsN.jpg",
+ "Lucy Heartfilia|Fairy Tail": "https://s4.anilist.co/file/anilistcdn/character/large/b5186-izgXf2S86K9u.png",
+ "Hiei|Yu Yu Hakusho": "https://s4.anilist.co/file/anilistcdn/character/large/b732-rg4H7yyv3LRo.png",
+ "Kurama|Yu Yu Hakusho": "https://s4.anilist.co/file/anilistcdn/character/large/b731-cv0jfjVrD09V.jpg",
+ "Kuwabara|Yu Yu Hakusho": "https://s4.anilist.co/file/anilistcdn/character/large/n730-H6SRWfoiFjBR.jpg",
+ "Ban|Seven Deadly Sins": "https://s4.anilist.co/file/anilistcdn/character/large/b77605-NrjhQwZwgJ3l.png",
+ "King|Seven Deadly Sins": "https://s4.anilist.co/file/anilistcdn/character/large/b417-gVLmIJu9phcK.png",
+ "Escanor|Seven Deadly Sins": "https://s4.anilist.co/file/anilistcdn/character/large/b90202-1H7FIX2hDmYd.png",
+ "Shinra|Fire Force": "https://s4.anilist.co/file/anilistcdn/character/large/n120462-oSWdz2MhkbDE.png",
+ "Benimaru|Fire Force": "https://s4.anilist.co/file/anilistcdn/character/large/b130848-AuuIm6GR8ody.jpg",
+ "Tamaki|Fire Force": "https://s4.anilist.co/file/anilistcdn/character/large/b130751-J8rhd4d3TxF4.png",
+ "Arthur|Fire Force": "https://s4.anilist.co/file/anilistcdn/character/large/n130715-IYNBAHBQa14y.png",
+ "Takemichi|Tokyo Revengers": "https://s4.anilist.co/file/anilistcdn/character/large/b145342-GSUutL83jGgI.png",
+ "Mikey|Tokyo Revengers": "https://s4.anilist.co/file/anilistcdn/character/large/b145341-CuPldCLZMvvf.png",
+ "Baji|Tokyo Revengers": "https://s4.anilist.co/file/anilistcdn/character/large/b145343-vRrkdWEUXwYM.jpg",
+ "Atsushi|Bungo Stray Dogs": "https://s4.anilist.co/file/anilistcdn/character/large/b89197-vB5kP72ruckV.png",
+ "Dazai|Bungo Stray Dogs": "https://s4.anilist.co/file/anilistcdn/character/large/b89198-qKmRTw4Y3PRC.png",
+ "Akutagawa|Bungo Stray Dogs": "https://s4.anilist.co/file/anilistcdn/character/large/b89199-h8tHKG8vKPNZ.png",
+ "Chuuya|Bungo Stray Dogs": "https://s4.anilist.co/file/anilistcdn/character/large/b89853-06qMPkrGlgP1.png",
+ "Rin Okumura|Blue Exorcist": "https://s4.anilist.co/file/anilistcdn/character/large/b24482-E6087V4uAVqL.jpg",
+ "Yukio|Blue Exorcist": "https://s4.anilist.co/file/anilistcdn/character/large/b24734-GgVZoNAPnxoc.png",
+ "Shiemi|Blue Exorcist": "https://s4.anilist.co/file/anilistcdn/character/large/b30430-LwO3yM6dg0HF.png",
+ "Suguro|Blue Exorcist": "https://s4.anilist.co/file/anilistcdn/character/large/b30429-NmVCBSzm3GNY.png",
+ "Maka|Soul Eater": "https://s4.anilist.co/file/anilistcdn/character/large/b8439-5TIyWlfClnMs.png",
+ "Soul|Soul Eater": "https://s4.anilist.co/file/anilistcdn/character/large/b8456-GtNbISpXhkvd.png",
+ "Death the Kid|Soul Eater": "https://s4.anilist.co/file/anilistcdn/character/large/b8455-0Ztel4ew5bNd.png",
+ "Black Star|Soul Eater": "https://s4.anilist.co/file/anilistcdn/character/large/b8464-oKu98OyJ3eZt.png",
+ "Yami Yugi|Yu-Gi-Oh": "https://s4.anilist.co/file/anilistcdn/character/large/b269621-lDsWwMWU5xF1.jpg",
+ "Yoh|Shaman King": "https://s4.anilist.co/file/anilistcdn/character/large/b167-mVViZcSWQxDn.png",
+ "Anna|Shaman King": "https://s4.anilist.co/file/anilistcdn/character/large/b170-sQGhuNQ1g3HG.png",
+ "Amidamaru|Shaman King": "https://s4.anilist.co/file/anilistcdn/character/large/169.jpg",
+ "Hao|Shaman King": "https://s4.anilist.co/file/anilistcdn/character/large/b172-AuF01ttTXRsW.jpg",
+ "Kafka Hibino|Kaiju No. 8": "https://s4.anilist.co/file/anilistcdn/character/large/b180692-rPGXuxhcKw5N.png",
+ "Kikoru|Kaiju No. 8": "https://s4.anilist.co/file/anilistcdn/character/large/b183889-2Ar6AHPx2mre.png",
+ "Reno|Kaiju No. 8": "https://s4.anilist.co/file/anilistcdn/character/large/b180694-Q0Ocr4aqBu4k.png",
+ "Mash Burnedead|Mashle": "https://s4.anilist.co/file/anilistcdn/character/large/b158734-k8FAVIyXKdW1.jpg",
+ "Lance|Mashle": "https://s4.anilist.co/file/anilistcdn/character/large/b172075-aOsZuM7D0bcW.jpg",
+ "Finn|Mashle": "https://s4.anilist.co/file/anilistcdn/character/large/b174368-tYxOTsrCDEk9.jpg",
+ "Momo|Dandadan": "https://s4.anilist.co/file/anilistcdn/character/large/b222594-24Jn7qlI5spH.png",
+ "Okarun|Dandadan": "https://s4.anilist.co/file/anilistcdn/character/large/b222593-qBqUvpodooAI.png",
+ "Turbo Granny|Dandadan": "https://s4.anilist.co/file/anilistcdn/character/large/b239956-Fok0Pl3rNOEL.png",
+ "Kenshin|Rurouni Kenshin": "https://s4.anilist.co/file/anilistcdn/character/large/b147-miunGYp6fkzb.png",
+ "Saito|Rurouni Kenshin": "https://s4.anilist.co/file/anilistcdn/character/large/b1409-V7taAezM5IUI.png",
+ "Sanosuke|Rurouni Kenshin": "https://s4.anilist.co/file/anilistcdn/character/large/b149-YxCJj4qtMUzB.jpg",
+ "Yato|Noragami": "https://s4.anilist.co/file/anilistcdn/character/large/b84677-PFmohzIXD1ud.png",
+ "Yukine|Noragami": "https://s4.anilist.co/file/anilistcdn/character/large/b84681-vFMPNxeDkoqt.png",
+ "Hiyori|Noragami": "https://s4.anilist.co/file/anilistcdn/character/large/b84679-GdMxvYy36M9H.png",
+ "Baki Hanma|Baki": "https://s4.anilist.co/file/anilistcdn/character/large/b10498-Ep1aY2liGmIA.png",
+ "Yujiro Hanma|Baki": "https://s4.anilist.co/file/anilistcdn/character/large/b10499-yqTyqgrkbZfO.jpg",
+ "Doppo|Baki": "https://s4.anilist.co/file/anilistcdn/character/large/b16261-LMY1cYT8oIt2.jpg",
+ "Akame|Akame ga Kill": "https://s4.anilist.co/file/anilistcdn/character/large/b63351-0WmsDENpiscp.png",
+ "Tatsumi|Akame ga Kill": "https://s4.anilist.co/file/anilistcdn/character/large/64749-a2ZdRWW1D5TR.jpg",
+ "Esdeath|Akame ga Kill": "https://s4.anilist.co/file/anilistcdn/character/large/b65239-2S3t2vSyUew9.png",
+ "Aladdin|Magi": "https://s4.anilist.co/file/anilistcdn/character/large/b41949-LaoaHJ2tJxBw.png",
+ "Alibaba|Magi": "https://s4.anilist.co/file/anilistcdn/character/large/b42501-BKURFIipvE1C.png",
+ "Morgiana|Magi": "https://s4.anilist.co/file/anilistcdn/character/large/b43121-o2KuUeEfh6AS.png",
+ "Jin Mori|The God of High School": "https://s4.anilist.co/file/anilistcdn/character/large/b124136-mdvrdRyKVn4R.png",
+ "Han Daewi|The God of High School": "https://s4.anilist.co/file/anilistcdn/character/large/b143291-E0gdqrvHUWiP.png",
+ "Yoo Mira|The God of High School": "https://s4.anilist.co/file/anilistcdn/character/large/b153293-qepIpM9aw3nw.png",
+ "Draken|Tokyo Revengers": "https://s4.anilist.co/file/anilistcdn/character/large/b145345-zyirrSsKIDCb.png"
 };
 
 /* Impostor clues, "word|show" -> vague hint about the character, injected at build time. */
@@ -573,38 +680,131 @@ const CHAR_HINTS = {
  "Sasuke|Naruto": "Brooding",
  "Kakashi|Naruto": "Laid-back",
  "Itachi|Naruto": "Mysterious",
+ "Gaara|Naruto": "Stoic",
  "Luffy|One Piece": "Carefree",
  "Zoro|One Piece": "Swordsman",
  "Sanji|One Piece": "Flirtatious",
  "Shanks|One Piece": "Mentor",
+ "Nami|One Piece": "Cunning",
  "Goku|Dragon Ball Z": "Cheerful",
  "Vegeta|Dragon Ball Z": "Prideful",
  "Frieza|Dragon Ball Z": "Tyrant",
+ "Gohan|Dragon Ball Z": "Gifted",
+ "Piccolo|Dragon Ball Z": "Mentor",
  "Ichigo|Bleach": "Protective",
  "Rukia|Bleach": "Stoic",
  "Aizen|Bleach": "Mastermind",
+ "Byakuya|Bleach": "Noble",
+ "Kenpachi|Bleach": "Savage",
  "Deku|My Hero Academia": "Earnest",
  "Bakugo|My Hero Academia": "Aggressive",
  "All Might|My Hero Academia": "Muscular",
+ "Todoroki|My Hero Academia": "Reserved",
+ "Shigaraki|My Hero Academia": "Vengeful",
  "Gojo|Jujutsu Kaisen": "Cocky",
  "Sukuna|Jujutsu Kaisen": "Menacing",
  "Yuji|Jujutsu Kaisen": "Kind-hearted",
+ "Megumi|Jujutsu Kaisen": "Stoic",
+ "Nobara|Jujutsu Kaisen": "Feisty",
  "Tanjiro|Demon Slayer": "Kind",
  "Nezuko|Demon Slayer": "Protective",
  "Rengoku|Demon Slayer": "Passionate",
+ "Zenitsu|Demon Slayer": "Cowardly",
+ "Inosuke|Demon Slayer": "Wild",
  "Gon|Hunter x Hunter": "Innocent",
  "Killua|Hunter x Hunter": "Cool",
  "Hisoka|Hunter x Hunter": "Creepy",
+ "Kurapika|Hunter x Hunter": "Focused",
+ "Leorio|Hunter x Hunter": "Brash",
  "Denji|Chainsaw Man": "Reckless",
  "Makima|Chainsaw Man": "Manipulative",
  "Power|Chainsaw Man": "Boastful",
+ "Aki|Chainsaw Man": "Serious",
+ "Kobeni|Chainsaw Man": "Nervous",
+ "Jotaro|JoJo's Bizarre Adventure": "Stoic",
+ "Dio|JoJo's Bizarre Adventure": "Villainous",
+ "Joseph|JoJo's Bizarre Adventure": "Cunning",
+ "Giorno|JoJo's Bizarre Adventure": "Ambitious",
+ "Josuke|JoJo's Bizarre Adventure": "Hot-headed",
  "Saitama|One Punch Man": "Indifferent",
  "Genos|One Punch Man": "Cyborg",
- "Asta|Black Clover": "Loud",
- "Natsu|Fairy Tail": "Hot-blooded",
+ "Garou|One Punch Man": "Rebellious",
+ "Tatsumaki|One Punch Man": "Irritable",
  "Edward Elric|Fullmetal Alchemist": "Alchemist",
+ "Alphonse|Fullmetal Alchemist": "Gentle",
+ "Roy Mustang|Fullmetal Alchemist": "Ambitious",
+ "Scar|Fullmetal Alchemist": "Vengeful",
+ "Asta|Black Clover": "Loud",
+ "Yuno|Black Clover": "Gifted",
+ "Noelle|Black Clover": "Prideful",
+ "Yami|Black Clover": "Bold",
+ "Natsu|Fairy Tail": "Hot-blooded",
+ "Gray|Fairy Tail": "Cool",
+ "Erza|Fairy Tail": "Fearsome",
+ "Lucy Heartfilia|Fairy Tail": "Cheerful",
  "Yusuke Urameshi|Yu Yu Hakusho": "Delinquent",
+ "Hiei|Yu Yu Hakusho": "Cold",
+ "Kurama|Yu Yu Hakusho": "Cunning",
+ "Kuwabara|Yu Yu Hakusho": "Loyal",
  "Meliodas|Seven Deadly Sins": "Deceptive",
+ "Ban|Seven Deadly Sins": "Reckless",
+ "King|Seven Deadly Sins": "Laid-back",
+ "Escanor|Seven Deadly Sins": "Prideful",
+ "Shinra|Fire Force": "Heroic",
+ "Benimaru|Fire Force": "Fierce",
+ "Tamaki|Fire Force": "Unlucky",
+ "Arthur|Fire Force": "Delusional",
+ "Takemichi|Tokyo Revengers": "Timid",
+ "Mikey|Tokyo Revengers": "Charismatic",
+ "Draken|Tokyo Revengers": "Loyal",
+ "Baji|Tokyo Revengers": "Reckless",
+ "Atsushi|Bungo Stray Dogs": "Timid",
+ "Dazai|Bungo Stray Dogs": "Eccentric",
+ "Akutagawa|Bungo Stray Dogs": "Ruthless",
+ "Chuuya|Bungo Stray Dogs": "Hot-headed",
+ "Rin Okumura|Blue Exorcist": "Hot-headed",
+ "Yukio|Blue Exorcist": "Composed",
+ "Shiemi|Blue Exorcist": "Gentle",
+ "Suguro|Blue Exorcist": "Determined",
+ "Maka|Soul Eater": "Diligent",
+ "Soul|Soul Eater": "Laid-back",
+ "Death the Kid|Soul Eater": "Meticulous",
+ "Black Star|Soul Eater": "Boastful",
+ "Yugi|Yu-Gi-Oh": "Brave",
+ "Seto Kaiba|Yu-Gi-Oh": "Arrogant",
+ "Joey Wheeler|Yu-Gi-Oh": "Hot-headed",
+ "Yami Yugi|Yu-Gi-Oh": "Commanding",
+ "Yoh|Shaman King": "Laid-back",
+ "Anna|Shaman King": "Stern",
+ "Amidamaru|Shaman King": "Loyal",
+ "Hao|Shaman King": "Arrogant",
+ "Kafka Hibino|Kaiju No. 8": "Determined",
+ "Kikoru|Kaiju No. 8": "Elite",
+ "Reno|Kaiju No. 8": "Eager",
+ "Mash Burnedead|Mashle": "Stoic",
+ "Lance|Mashle": "Serious",
+ "Finn|Mashle": "Timid",
+ "Momo|Dandadan": "Brave",
+ "Okarun|Dandadan": "Awkward",
+ "Turbo Granny|Dandadan": "Mischievous",
+ "Kenshin|Rurouni Kenshin": "Humble",
+ "Saito|Rurouni Kenshin": "Stern",
+ "Sanosuke|Rurouni Kenshin": "Brash",
+ "Yato|Noragami": "Carefree",
+ "Yukine|Noragami": "Moody",
+ "Hiyori|Noragami": "Kind",
+ "Baki Hanma|Baki": "Determined",
+ "Yujiro Hanma|Baki": "Brutal",
+ "Doppo|Baki": "Tough",
+ "Akame|Akame ga Kill": "Stoic",
+ "Tatsumi|Akame ga Kill": "Earnest",
+ "Esdeath|Akame ga Kill": "Sadistic",
+ "Aladdin|Magi": "Cheerful",
+ "Alibaba|Magi": "Brave",
+ "Morgiana|Magi": "Loyal",
+ "Jin Mori|The God of High School": "Cocky",
+ "Han Daewi|The God of High School": "Loyal",
+ "Yoo Mira|The God of High School": "Fierce",
  "Light Yagami|Death Note": "Calculating",
  "L|Death Note": "Eccentric",
  "Ryuk|Death Note": "Mischievous",
@@ -826,10 +1026,6 @@ const CHAR_HINTS = {
  "Charizard|Pokemon": "Fierce",
  "Mewtwo|Pokemon": "Powerful",
  "Jessie and James|Pokemon": "Bumbling",
- "Yugi|Yu-Gi-Oh": "Brave",
- "Seto Kaiba|Yu-Gi-Oh": "Arrogant",
- "Joey Wheeler|Yu-Gi-Oh": "Hot-headed",
- "Blue-Eyes White Dragon|Yu-Gi-Oh": "Powerful",
  "Agumon|Digimon": "Loyal",
  "Tai|Digimon": "Brave",
  "Astro Boy|Astro Boy": "Innocent",
@@ -853,12 +1049,39 @@ const CHAR_HINTS = {
    top 15-20 shows in that genre, so every word is a well-known character. */
 const WORDS = {
   'Shonen Battle': [
-    // Naruto, One Piece, Dragon Ball, Bleach, MHA, JJK, Demon Slayer, HxH,
-    // Chainsaw Man, One Punch Man, Black Clover, Fairy Tail, FMA, Yu Yu Hakusho, Seven Deadly Sins
-    ['Naruto','Naruto'],['Sasuke','Naruto'],['Kakashi','Naruto'],['Itachi','Naruto'],['Luffy','One Piece'],['Zoro','One Piece'],['Sanji','One Piece'],['Shanks','One Piece'],['Goku','Dragon Ball Z'],['Vegeta','Dragon Ball Z'],['Frieza','Dragon Ball Z'],
-    ['Ichigo','Bleach'],['Rukia','Bleach'],['Aizen','Bleach'],['Deku','My Hero Academia'],['Bakugo','My Hero Academia'],['All Might','My Hero Academia'],['Gojo','Jujutsu Kaisen'],['Sukuna','Jujutsu Kaisen'],['Yuji','Jujutsu Kaisen'],['Tanjiro','Demon Slayer'],['Nezuko','Demon Slayer'],
-    ['Rengoku','Demon Slayer'],['Gon','Hunter x Hunter'],['Killua','Hunter x Hunter'],['Hisoka','Hunter x Hunter'],['Denji','Chainsaw Man'],['Makima','Chainsaw Man'],['Power','Chainsaw Man'],['Saitama','One Punch Man'],['Genos','One Punch Man'],['Asta','Black Clover'],['Natsu','Fairy Tail'],
-    ['Edward Elric','Fullmetal Alchemist'],['Yusuke Urameshi','Yu Yu Hakusho'],['Meliodas','Seven Deadly Sins'],
+    // 30 popularity-picked shows + Yu-Gi-Oh & Shaman King (guaranteed). 3-5 chars/show.
+    ['Naruto','Naruto'],['Sasuke','Naruto'],['Kakashi','Naruto'],['Itachi','Naruto'],['Gaara','Naruto'],
+    ['Luffy','One Piece'],['Zoro','One Piece'],['Sanji','One Piece'],['Shanks','One Piece'],['Nami','One Piece'],
+    ['Goku','Dragon Ball Z'],['Vegeta','Dragon Ball Z'],['Frieza','Dragon Ball Z'],['Gohan','Dragon Ball Z'],['Piccolo','Dragon Ball Z'],
+    ['Ichigo','Bleach'],['Rukia','Bleach'],['Aizen','Bleach'],['Byakuya','Bleach'],['Kenpachi','Bleach'],
+    ['Deku','My Hero Academia'],['Bakugo','My Hero Academia'],['All Might','My Hero Academia'],['Todoroki','My Hero Academia'],['Shigaraki','My Hero Academia'],
+    ['Gojo','Jujutsu Kaisen'],['Sukuna','Jujutsu Kaisen'],['Yuji','Jujutsu Kaisen'],['Megumi','Jujutsu Kaisen'],['Nobara','Jujutsu Kaisen'],
+    ['Tanjiro','Demon Slayer'],['Nezuko','Demon Slayer'],['Rengoku','Demon Slayer'],['Zenitsu','Demon Slayer'],['Inosuke','Demon Slayer'],
+    ['Gon','Hunter x Hunter'],['Killua','Hunter x Hunter'],['Hisoka','Hunter x Hunter'],['Kurapika','Hunter x Hunter'],['Leorio','Hunter x Hunter'],
+    ['Denji','Chainsaw Man'],['Makima','Chainsaw Man'],['Power','Chainsaw Man'],['Aki','Chainsaw Man'],['Kobeni','Chainsaw Man'],
+    ['Jotaro','JoJo\'s Bizarre Adventure'],['Dio','JoJo\'s Bizarre Adventure'],['Joseph','JoJo\'s Bizarre Adventure'],['Giorno','JoJo\'s Bizarre Adventure'],['Josuke','JoJo\'s Bizarre Adventure'],
+    ['Saitama','One Punch Man'],['Genos','One Punch Man'],['Garou','One Punch Man'],['Tatsumaki','One Punch Man'],
+    ['Edward Elric','Fullmetal Alchemist'],['Alphonse','Fullmetal Alchemist'],['Roy Mustang','Fullmetal Alchemist'],['Scar','Fullmetal Alchemist'],
+    ['Asta','Black Clover'],['Yuno','Black Clover'],['Noelle','Black Clover'],['Yami','Black Clover'],
+    ['Natsu','Fairy Tail'],['Gray','Fairy Tail'],['Erza','Fairy Tail'],['Lucy Heartfilia','Fairy Tail'],
+    ['Yusuke Urameshi','Yu Yu Hakusho'],['Hiei','Yu Yu Hakusho'],['Kurama','Yu Yu Hakusho'],['Kuwabara','Yu Yu Hakusho'],
+    ['Meliodas','Seven Deadly Sins'],['Ban','Seven Deadly Sins'],['King','Seven Deadly Sins'],['Escanor','Seven Deadly Sins'],
+    ['Shinra','Fire Force'],['Benimaru','Fire Force'],['Tamaki','Fire Force'],['Arthur','Fire Force'],
+    ['Takemichi','Tokyo Revengers'],['Mikey','Tokyo Revengers'],['Draken','Tokyo Revengers'],['Baji','Tokyo Revengers'],
+    ['Atsushi','Bungo Stray Dogs'],['Dazai','Bungo Stray Dogs'],['Akutagawa','Bungo Stray Dogs'],['Chuuya','Bungo Stray Dogs'],
+    ['Rin Okumura','Blue Exorcist'],['Yukio','Blue Exorcist'],['Shiemi','Blue Exorcist'],['Suguro','Blue Exorcist'],
+    ['Maka','Soul Eater'],['Soul','Soul Eater'],['Death the Kid','Soul Eater'],['Black Star','Soul Eater'],
+    ['Yugi','Yu-Gi-Oh'],['Seto Kaiba','Yu-Gi-Oh'],['Joey Wheeler','Yu-Gi-Oh'],['Yami Yugi','Yu-Gi-Oh'],
+    ['Yoh','Shaman King'],['Anna','Shaman King'],['Amidamaru','Shaman King'],['Hao','Shaman King'],
+    ['Kafka Hibino','Kaiju No. 8'],['Kikoru','Kaiju No. 8'],['Reno','Kaiju No. 8'],
+    ['Mash Burnedead','Mashle'],['Lance','Mashle'],['Finn','Mashle'],
+    ['Momo','Dandadan'],['Okarun','Dandadan'],['Turbo Granny','Dandadan'],
+    ['Kenshin','Rurouni Kenshin'],['Saito','Rurouni Kenshin'],['Sanosuke','Rurouni Kenshin'],
+    ['Yato','Noragami'],['Yukine','Noragami'],['Hiyori','Noragami'],
+    ['Baki Hanma','Baki'],['Yujiro Hanma','Baki'],['Doppo','Baki'],
+    ['Akame','Akame ga Kill'],['Tatsumi','Akame ga Kill'],['Esdeath','Akame ga Kill'],
+    ['Aladdin','Magi'],['Alibaba','Magi'],['Morgiana','Magi'],
+    ['Jin Mori','The God of High School'],['Han Daewi','The God of High School'],['Yoo Mira','The God of High School'],
   ],
   'Dark & Psychological': [
     // Death Note, Attack on Titan, Tokyo Ghoul, Berserk, Monster, Vinland Saga,
@@ -915,10 +1138,11 @@ const WORDS = {
     ['Hina','Weathering With You'],['Suzume','Suzume'],['Souta','Suzume'],['Shoya','A Silent Voice'],['Shoko','A Silent Voice'],['Mahito','The Boy and the Heron'],['The Grey Heron','The Boy and the Heron'],['Sheeta','Castle in the Sky'],['Pazu','Castle in the Sky'],
   ],
   'Classics & Icons': [
-    // Sailor Moon, Pokemon, Yu-Gi-Oh, Digimon, Inuyasha, Detective Conan, Lupin III,
+    // Sailor Moon, Pokemon, Digimon, Inuyasha, Detective Conan, Lupin III,
     // Astro Boy, Doraemon, Ranma, Dragon Ball (original), Speed Racer, Captain Tsubasa
+    // (Yu-Gi-Oh moved to Shonen Battle)
     ['Usagi','Sailor Moon'],['Tuxedo Mask','Sailor Moon'],['Sailor Mars','Sailor Moon'],['Luna','Sailor Moon'],['Pikachu','Pokemon'],['Ash','Pokemon'],['Misty','Pokemon'],['Brock','Pokemon'],['Charizard','Pokemon'],
-    ['Mewtwo','Pokemon'],['Jessie and James','Pokemon'],['Yugi','Yu-Gi-Oh'],['Seto Kaiba','Yu-Gi-Oh'],['Joey Wheeler','Yu-Gi-Oh'],['Blue-Eyes White Dragon','Yu-Gi-Oh'],
+    ['Mewtwo','Pokemon'],['Jessie and James','Pokemon'],
     ['Agumon','Digimon'],['Tai','Digimon'],['Astro Boy','Astro Boy'],['Doraemon','Doraemon'],['Nobita','Doraemon'],['Inuyasha','Inuyasha'],['Kagome','Inuyasha'],['Sesshomaru','Inuyasha'],['Ranma','Ranma 1/2'],
     ['Detective Conan','Detective Conan'],['Lupin','Lupin III'],['Zenigata','Lupin III'],['Kid Goku','Dragon Ball'],['Master Roshi','Dragon Ball'],['Speed Racer','Speed Racer'],['Tsubasa','Captain Tsubasa'],
   ],
@@ -997,6 +1221,15 @@ function joinRoom(code, thenCb) {
     render();
   });
 
+  channel.on('broadcast', { event: 'checkvote' }, ({ payload }) => {
+    if (!game || game.phase !== 'check' || payload.round !== game.round) return;
+    game.checkVotes = game.checkVotes || {};
+    game.checkVotes[payload.voterId] = payload.choice;
+    // Only the host resolves (re-deal is random, must be one authority).
+    if (isHost()) resolveCheck();
+    render();
+  });
+
   channel.on('broadcast', { event: 'vote' }, ({ payload }) => {
     if (!game || game.phase !== 'voting' || payload.round !== game.round) return;
     game.votes[payload.voterId] = payload.targetId;
@@ -1037,21 +1270,25 @@ function sendState(g) {
 }
 
 /* ============ GAME LOGIC (host actions) ============ */
+function pickWord(settings, used) {
+  const pool = [];
+  settings.categories.forEach(c => (WORDS[c] || []).forEach(p => pool.push({ w: p[0], show: p[1], c })));
+  let avail = pool.filter(p => !used.includes(p.w));
+  if (!avail.length) avail = pool; // recycled every word, start over
+  return avail[Math.floor(Math.random() * avail.length)];
+}
+
 function startRound() {
   const players = presencePlayers.slice().sort((a, b) => (a.joinedAt - b.joinedAt) || a.id.localeCompare(b.id));
   if (players.length < 1) { toast('Waiting for players to join...'); return; }
   const settings = (game && game.settings) || mySettings;
   // Solo (test mode): no impostor, so you can see the crew word card + image.
   const nImp = players.length < 2 ? 0 : (players.length >= 6 ? settings.impostors : 1);
-  const pool = [];
-  settings.categories.forEach(c => (WORDS[c] || []).forEach(p => pool.push({ w: p[0], show: p[1], c })));
   const used = (game && game.usedWords) || [];
-  let avail = pool.filter(p => !used.includes(p.w));
-  if (!avail.length) avail = pool; // recycled every word, start over
-  const pick = avail[Math.floor(Math.random() * avail.length)];
+  const pick = pickWord(settings, used);
   const impostorIds = shuffle(players.map(p => p.id)).slice(0, nImp);
   game = {
-    phase: 'playing',
+    phase: 'check',
     round: ((game && game.round) || 0) + 1,
     players: players.map(p => ({ id: p.id, name: p.name, emoji: p.emoji })),
     order: shuffle(players.map(p => p.id)),
@@ -1061,10 +1298,36 @@ function startRound() {
     category: pick.c,
     settings,
     usedWords: used.concat([pick.w]).slice(-200),
+    checkVotes: {},
     votes: {},
     guesses: {},
   };
   sendState(game);
+}
+
+// Host only: once every player has voted on the character, proceed or re-deal.
+function resolveCheck() {
+  if (!game || game.phase !== 'check') return;
+  const voters = game.players.map(p => p.id);
+  if (!voters.every(id => game.checkVotes[id])) return; // wait for all
+  const go = voters.filter(id => game.checkVotes[id] === 'go').length;
+  const skip = voters.length - go;
+  if (go >= skip) {
+    game.phase = 'playing';
+    sendState(game);
+  } else {
+    // Majority did not know it: deal a new character, same impostor and order.
+    const pick = pickWord(game.settings, game.usedWords);
+    game.word = pick.w; game.show = pick.show; game.category = pick.c;
+    game.usedWords = game.usedWords.concat([pick.w]).slice(-200);
+    game.checkVotes = {};
+    sendState(game);
+  }
+}
+
+function castCheckVote(choice) {
+  if (!game || game.phase !== 'check' || game.checkVotes[myId]) return;
+  channel.send({ type: 'broadcast', event: 'checkvote', payload: { voterId: myId, choice, round: game.round } });
 }
 
 function startVoting() {
@@ -1132,18 +1395,37 @@ function renderPlay() {
   const amImpostor = game.impostorIds.includes(myId);
   const inRound = game.players.some(p => p.id === myId);
 
-  ['phase-playing', 'phase-voting', 'phase-reveal'].forEach(id => $(id).style.display = 'none');
+  ['role-area', 'phase-check', 'phase-playing', 'phase-voting', 'phase-reveal'].forEach(id => $(id).style.display = 'none');
 
-  if (game.phase === 'playing') {
-    $('phase-playing').style.display = 'block';
-    // role card content set on peek (see hold handlers); store current role text
+  // The role card is shown during the character check and the round itself.
+  if (game.phase === 'check' || game.phase === 'playing') {
+    $('role-area').style.display = 'block';
     roleContent = !inRound
       ? { big: 'SPECTATING', sub: 'You joined mid-round. In from the next round!', cls: 'crew' }
       : amImpostor
         ? { big: 'IMPOSTOR!', sub: (game.settings.hint && CHAR_HINTS[game.word + '|' + game.show]) ? 'Clue: ' + CHAR_HINTS[game.word + '|' + game.show] : 'No clue. Blend in and survive.', cls: 'imp' }
         : { big: game.word, sub: 'From ' + game.show + ' (' + game.category + ')', cls: 'crew', img: CHAR_IMAGES[game.word + '|' + game.show] };
-    if (game.round !== roleRound) { roleRound = game.round; roleVisible = true; }
+    // Re-open the card each new round and each re-deal within the check.
+    const stamp = game.round + ':' + game.word;
+    if (stamp !== roleRound) { roleRound = stamp; roleVisible = true; }
     if (roleVisible) showRole(); else hideRole();
+  }
+
+  if (game.phase === 'check') {
+    $('phase-check').style.display = 'block';
+    const cv = game.checkVotes || {};
+    const mine = cv[myId];
+    $('btn-check-go').disabled = !!mine || !inRound;
+    $('btn-check-skip').disabled = !!mine || !inRound;
+    const nVoted = Object.keys(cv).length;
+    $('check-waiting').textContent = mine
+      ? (mine === 'go' ? 'You voted to play. ' : 'You voted to skip. ') + 'Waiting: ' + nVoted + '/' + game.players.length
+      : 'Tap once you have decided. ' + nVoted + '/' + game.players.length + ' voted.';
+    $('check-note').textContent = host ? 'A new character is dealt automatically if most players skip.' : '';
+  }
+
+  if (game.phase === 'playing') {
+    $('phase-playing').style.display = 'block';
     $('order-list').innerHTML = game.order.map((id, i) => {
       const p = playerById(id);
       return '<div class="order-item' + (i === 0 ? ' first' : '') + '">' + p.emoji + ' ' + esc(p.name) + (id === myId ? ' (you)' : '') + '</div>';
@@ -1289,6 +1571,8 @@ $('btn-copy-link').addEventListener('click', async () => {
 });
 
 $('btn-start').addEventListener('click', startRound);
+$('btn-check-go').addEventListener('click', () => castCheckVote('go'));
+$('btn-check-skip').addEventListener('click', () => castCheckVote('skip'));
 $('btn-voting').addEventListener('click', startVoting);
 $('btn-next-round').addEventListener('click', startRound);
 $('btn-back-lobby').addEventListener('click', backToLobby);
